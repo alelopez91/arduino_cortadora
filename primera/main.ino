@@ -8,14 +8,14 @@ void setup(){
 }
 
 void loop(){
-
-  if(cortadora.tiene_posicion_inicial == false){
-    cortadora.detectar_posicion_inicial();
-  } else {
-    if (cortadora.busca_contorno == true){
-      cortadora.recorrer_contorno();
-    }
-  }
+  cortadora.prueba();
+  // if(cortadora.tiene_posicion_inicial == false){
+  //   cortadora.detectar_posicion_inicial();
+  // } else {
+  //   if (cortadora.busca_contorno == true){
+  //     cortadora.recorrer_contorno();
+  //   }
+  // }
 
   // delay(500);
   // digitalWrite(3, HIGH);

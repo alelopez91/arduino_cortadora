@@ -9,19 +9,16 @@ class CortadoraClass{
     int RI_ADELANTE;
 
     // Ultrasonido izquierdo - derecho
-    int us_adelante_trig;
-    int us_adelante_echo;
-    int us_izq_trig;
-    int us_izq_echo;
+    int US_ADELANTE_TRIG;
+    int US_ADELANTE_ECHO;
+    int US_IZQ_TRIG;
+    int US_IZQ_ECHO;
 
     
-
-
-
   public:
-  bool tiene_posicion_inicial;
-  bool busca_contorno;
-  bool encontro_pared;
+    bool tiene_posicion_inicial;
+    bool busca_contorno;
+    bool encontro_pared;
 
   void init(){
     Serial.println("Comenzando...");
@@ -30,32 +27,32 @@ class CortadoraClass{
     encontro_pared = false;
     
 
-    int RD_ATRAS = 3;
-    int RD_ADELANTE = 4;
-    int RI_ATRAS = 5;
-    int RI_ADELANTE = 6;
-    int us_adelante_trig = 9;
-    int us_adelante_echo = 8;
-    int us_izq_trig = 11;
-    int us_izq_echo = 10;
+    RD_ATRAS = 3;
+    RD_ADELANTE = 4;
+    RI_ATRAS = 5;
+    RI_ADELANTE = 6;
+    US_ADELANTE_TRIG = 8;
+    US_ADELANTE_ECHO = 9;
+    US_IZQ_TRIG = 10;
+    US_IZQ_ECHO = 11;
 
       // declaracion de pines dentro de arduino
     pinMode(RI_ATRAS,OUTPUT);
     pinMode(RI_ADELANTE,OUTPUT);
     pinMode(RD_ATRAS,OUTPUT);
     pinMode(RD_ADELANTE,OUTPUT);
-    pinMode(us_adelante_trig, OUTPUT);
-    pinMode(us_adelante_echo, INPUT);
-    pinMode(us_izq_trig, OUTPUT);
-    pinMode(us_izq_echo, INPUT);
+    pinMode(US_ADELANTE_TRIG, OUTPUT);
+    pinMode(US_ADELANTE_ECHO, INPUT);
+    pinMode(US_IZQ_TRIG, OUTPUT);
+    pinMode(US_IZQ_ECHO, INPUT);
 
     //Estados iniciales de pines
     digitalWrite(RI_ATRAS, LOW);
     digitalWrite(RI_ADELANTE, LOW);
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, LOW);
-    digitalWrite(us_adelante_trig, LOW);
-    digitalWrite(us_izq_trig, LOW);
+    digitalWrite(US_ADELANTE_TRIG, LOW);
+    digitalWrite(US_IZQ_TRIG, LOW);
 
     Serial.println("Setup hecho.");
   }
@@ -189,36 +186,43 @@ class CortadoraClass{
     Serial.print(" cm - Pin echo: ");
     Serial.println(echo);
 
-    if(distancia<6){
-      Serial.println("muy cerca");
-      corregir_der(150);
-      return true;
-    }
-    else{
-      if(distancia>=6 and distancia<=8){
-        Serial.println("Ok");
-        return true;
-      }
-      else{
-        if(distancia>8 and distancia<=10){
-          Serial.println("Lejos");
-          corregir_izq(150);
-          return true;
-        }
-        else{
-          return false;
-        }
-      }
-    }
+    // if(distancia<6){
+    //   Serial.println("muy cerca");
+    //   corregir_der(150);
+    //   return true;
+    // }
+    // else{
+    //   if(distancia>=6 and distancia<=8){
+    //     Serial.println("Ok");
+    //     return true;
+    //   }
+    //   else{
+    //     if(distancia>8 and distancia<=10){
+    //       Serial.println("Lejos");
+    //       corregir_izq(150);
+    //       return true;
+    //     }
+    //     else{
+    //       return false;
+    //     }
+    //   }
+    // }
+  }
+
+  void prueba(){
+    Serial.println("izquierdo");
+    hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO);
+    // Serial.println("adelante");
+    // hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
   }
 
   void detectar_posicion_inicial(){
-    if(hay_obstaculo(us_adelante_trig, us_adelante_echo) == true and hay_obstaculo(us_izq_trig, us_izq_echo) == true){
+    if(hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO) == true and hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO) == true){
       Serial.println("Guarda pos inicial");
       tiene_posicion_inicial = true;
       busca_contorno = true;
       }else{
-        if(hay_obstaculo(us_adelante_trig, us_adelante_echo) == true){
+        if(hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO) == true){
           girar_der(3000);
         }
         else{          
@@ -230,28 +234,28 @@ class CortadoraClass{
     void recorrer_contorno(){
 
       Serial.println("tiene pos");
-      if(hay_obstaculo(us_adelante_trig, us_adelante_echo) == true and hay_obstaculo(us_izq_trig, us_izq_echo) == true){
+      if(hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO) == true and hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO) == true){
         encontro_pared = false;
         girar_der(3000);
       }
 
-      if(hay_obstaculo(us_adelante_trig, us_adelante_echo) == true and hay_obstaculo(us_izq_trig, us_izq_echo) == false){
+      if(hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO) == true and hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO) == false){
         girar_der(3000);
       }
       else{
-        if(hay_obstaculo(us_izq_trig, us_izq_echo) == false and encontro_pared == true){
+        if(hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO) == false and encontro_pared == true){
           mover_adelante(3000);
           girar_izq(3000);
           mover_adelante(3000);
         }
       }
 
-      if(hay_obstaculo(us_adelante_trig, us_adelante_echo) == false and hay_obstaculo(us_izq_trig, us_izq_echo) == true){
+      if(hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO) == false and hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO) == true){
         encontro_pared = true;
         mover_adelante(3000);
       }
 
-      if(hay_obstaculo(us_adelante_trig, us_adelante_echo) == false and hay_obstaculo(us_izq_trig, us_izq_echo) == false){
+      if(hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO) == false and hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO) == false){
         mover_adelante(3000);
       }
     } 
