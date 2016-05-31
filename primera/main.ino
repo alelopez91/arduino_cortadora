@@ -8,7 +8,9 @@ void setup(){
 }
 
 void loop(){
-  cortadora.prueba();
+  Serial.println("Comienza Delay");
+  delay(10000);
+  Serial.println("Termina Delay");
   // if(cortadora.tiene_posicion_inicial == false){
   //   cortadora.detectar_posicion_inicial();
   // } else {
@@ -36,14 +38,10 @@ void loop(){
   // Serial.println("Izquierda");
   // cortadora.hay_obstaculo(11,10);
   //delay(2000);
+    
+  cortadora.mover_adelante(1000);
   
-  // cortadora.mover_adelante2(3000);
-  
-  // cortadora.mover_atras2(3000);
-
-  // cortadora.mover_adelante(3000);
-  
-  // cortadora.mover_atras(3000);
+  cortadora.mover_atras(1000);
 
 
 };

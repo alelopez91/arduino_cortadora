@@ -31,10 +31,10 @@ class CortadoraClass{
     RD_ADELANTE = 4;
     RI_ATRAS = 5;
     RI_ADELANTE = 6;
-    US_ADELANTE_TRIG = 8;
-    US_ADELANTE_ECHO = 9;
-    US_IZQ_TRIG = 10;
-    US_IZQ_ECHO = 11;
+    US_ADELANTE_TRIG = 9;
+    US_ADELANTE_ECHO = 8;
+    US_IZQ_TRIG = 11;
+    US_IZQ_ECHO = 10;
 
       // declaracion de pines dentro de arduino
     pinMode(RI_ATRAS,OUTPUT);
@@ -131,39 +131,7 @@ class CortadoraClass{
     digitalWrite(RI_ATRAS, LOW);
     digitalWrite(RD_ATRAS, LOW);
     
-  }
-
-  //--------------------------------------------------------------
-  //--------------------------------------------------------------
-  //--------------------------------------------------------------
-  void mover_adelante2(int mov){
-    digitalWrite(6, HIGH);
-    digitalWrite(5, LOW);
-    digitalWrite(3, LOW);
-    digitalWrite(4, HIGH);
-    Serial.println("adelante2");
-    
-    delay(mov);
-    digitalWrite(6, LOW);
-    digitalWrite(4, LOW);
-    
-  }
-
-  void mover_atras2(int mov){
-    digitalWrite(6, LOW);
-    digitalWrite(5, HIGH);
-    digitalWrite(3, HIGH);
-    digitalWrite(4, LOW);
-    Serial.println("atras2");
-    
-    delay(mov);
-    digitalWrite(5, LOW);
-    digitalWrite(3, LOW);
-    
-  }
-  //------------------------------------------------------------
-  //--------------------------------------------------------------
-  //--------------------------------------------------------------
+  }  
 
   bool hay_obstaculo(int trig, int echo){
     long distancia;
@@ -186,37 +154,30 @@ class CortadoraClass{
     Serial.print(" cm - Pin echo: ");
     Serial.println(echo);
 
-    // if(distancia<6){
-    //   Serial.println("muy cerca");
-    //   corregir_der(150);
-    //   return true;
-    // }
-    // else{
-    //   if(distancia>=6 and distancia<=8){
-    //     Serial.println("Ok");
-    //     return true;
-    //   }
-    //   else{
-    //     if(distancia>8 and distancia<=10){
-    //       Serial.println("Lejos");
-    //       corregir_izq(150);
-    //       return true;
-    //     }
-    //     else{
-    //       return false;
-    //     }
-    //   }
-    // }
+    if(distancia<6){
+      Serial.println("muy cerca");
+      corregir_der(150);
+      return true;
+    }
+    else{
+      if(distancia>=6 and distancia<=8){
+        Serial.println("Ok");
+        return true;
+      }
+      else{
+        if(distancia>8 and distancia<=10){
+          Serial.println("Lejos");
+          corregir_izq(150);
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
+    }
   }
 
-  void prueba(){
-    Serial.println("izquierdo");
-    hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO);
-    // Serial.println("adelante");
-    // hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
-  }
-
-  void detectar_posicion_inicial(){
+ void detectar_posicion_inicial(){
     if(hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO) == true and hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO) == true){
       Serial.println("Guarda pos inicial");
       tiene_posicion_inicial = true;
