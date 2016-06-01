@@ -7,7 +7,7 @@ void setup(){
   cortadora.init();
 
   Serial.println("Comienza Delay");
-  delay(2000);
+  delay(3000);
   Serial.println("Termina Delay");
 }
 
