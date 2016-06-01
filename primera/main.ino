@@ -5,43 +5,18 @@ CortadoraClass cortadora;
 void setup(){
   Serial.begin(9600);
   cortadora.init();
+
+  Serial.println("Comienza Delay");
+  delay(2000);
+  Serial.println("Termina Delay");
 }
 
 void loop(){
-  Serial.println("Comienza Delay");
-  delay(10000);
-  Serial.println("Termina Delay");
-  // if(cortadora.tiene_posicion_inicial == false){
-  //   cortadora.detectar_posicion_inicial();
-  // } else {
-  //   if (cortadora.busca_contorno == true){
-  //     cortadora.recorrer_contorno();
-  //   }
-  // }
-
-  // delay(500);
-  // digitalWrite(3, HIGH);
-  // digitalWrite(4, HIGH);
-  // digitalWrite(5, HIGH);
-  // digitalWrite(6, HIGH);
-  // delay(500);
-  // digitalWrite(3, LOW);
-  // digitalWrite(4, LOW);
-  // digitalWrite(5, LOW);
-  // digitalWrite(6, LOW);
-
-
-
-  // Serial.println("Adelante");
-  // cortadora.hay_obstaculo(9,8);
-  //delay(2000);
-  // Serial.println("Izquierda");
-  // cortadora.hay_obstaculo(11,10);
-  //delay(2000);
-    
-  cortadora.mover_adelante(1000);
-  
-  cortadora.mover_atras(1000);
-
-
+  if(cortadora.tiene_posicion_inicial == false){
+    cortadora.detectar_posicion_inicial();
+  } else {
+    if (cortadora.busca_contorno == true){
+      cortadora.recorrer_contorno();
+    }
+  }
 };
