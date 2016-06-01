@@ -1,16 +1,15 @@
 #include "Arduino.h"
+
+#include <Fuzzy.h>
+#include <FuzzyComposition.h>
+#include <FuzzyInput.h>
+#include <FuzzyIO.h>
+#include <FuzzyOutput.h>
+#include <FuzzyRule.h>
+#include <FuzzyRuleAntecedent.h>
+#include <FuzzyRuleConsequent.h>
+#include <FuzzySet.h>
 //#include "Ultrasonic.h"
-#include "Libraries/eFLL/FuzzyRule.h"
-#include "Libraries/eFLL/FuzzyComposition.h"
-// #include "Libraries/eFLL/Fuzzy.h"
-#include "Libraries/eFLL/Fuzzy.cpp"
-#include "Libraries/eFLL/FuzzyRuleConsequent.h"
-#include "Libraries/eFLL/FuzzyOutput.cpp"
-#include "Libraries/eFLL/FuzzyInput.cpp"
-#include "Libraries/eFLL/FuzzyIO.cpp"
-//#include "Libraries/eFLL/FuzzySet.h"
-#include "Libraries/eFLL/FuzzySet.cpp"
-#include "Libraries/eFLL/FuzzyRuleAntecedent.h"
 
 class CortadoraClass{
   private:
@@ -75,9 +74,6 @@ class CortadoraClass{
     US_IZQ_TRIG = 11;
     VELOCIDAD = 3;
     
-
-
-
     // declaracion de pines dentro de arduino
     pinMode(RI_ATRAS,OUTPUT);
     pinMode(RI_ADELANTE,OUTPUT);
@@ -131,6 +127,168 @@ class CortadoraClass{
     vel_der->addFuzzySet(adelante_rapido);    // Agregar fuzzyset adelante rapido     
     fuzzy->addFuzzyOutput(vel_der);           // Agrega entrada difusa al objeto difuso
     
+    //Declaracion de antecedentes
+    FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_muy_cerca = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
+    if_dist_adelante_cerca_and_dist_izq_muy_cerca->joinWithAND(adelante_cerca, izq_muy_cerca);     // Agregando conjunto fuzzy correspondiente al antecedente
+    FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_cerca     = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
+    if_dist_adelante_cerca_and_dist_izq_cerca->joinWithAND(adelante_cerca, izq_cerca);             // Agregando conjunto fuzzy correspondiente al antecedente
+    FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_perfecto = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
+    if_dist_adelante_cerca_and_dist_izq_perfecto->joinWithAND(adelante_cerca, izq_perfecto);       // Agregando conjunto fuzzy correspondiente al antecedente
+    FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_lejos     = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
+    if_dist_adelante_cerca_and_dist_izq_lejos->joinWithAND(adelante_cerca, izq_lejos);             // Agregando conjunto fuzzy correspondiente al antecedente
+    FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_muy_lejos = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
+    if_dist_adelante_cerca_and_dist_izq_muy_lejos->joinWithAND(adelante_cerca, izq_muy_lejos);     // Agregando conjunto fuzzy correspondiente al antecedente
+    FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_muy_cerca  = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
+    if_dist_adelante_bien_and_dist_izq_muy_cerca->joinWithAND(adelante_bien, izq_muy_cerca);        // Agregando conjunto fuzzy correspondiente al antecedente                                        // Agregando FuzzySet correspondiente a la consecuencia
+    FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_cerca      = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
+    if_dist_adelante_bien_and_dist_izq_cerca->joinWithAND(adelante_bien, izq_cerca);                // Agregando conjunto fuzzy correspondiente al antecedente
+    FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_perfecto   = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
+    if_dist_adelante_bien_and_dist_izq_perfecto->joinWithAND(adelante_bien, izq_perfecto);          // Agregando conjunto fuzzy correspondiente al antecedente                                         // Agregando FuzzySet correspondiente a la consecuencia
+    FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_lejos      = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
+    if_dist_adelante_bien_and_dist_izq_lejos->joinWithAND(adelante_bien, izq_lejos);                // Agregando conjunto fuzzy correspondiente al antecedente                                         // Agregando FuzzySet correspondiente a la consecuencia
+    FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_muy_lejos  = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
+    if_dist_adelante_bien_and_dist_izq_muy_lejos->joinWithAND(adelante_bien, izq_muy_lejos);        // Agregando conjunto fuzzy correspondiente al antecedente
+    FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_muy_cerca = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
+    if_dist_adelante_lejos_and_dist_izq_muy_cerca->joinWithAND(adelante_lejos, izq_muy_cerca);      // Agregando conjunto fuzzy correspondiente al antecedente
+    FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_cerca     = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
+    if_dist_adelante_lejos_and_dist_izq_cerca->joinWithAND(adelante_lejos, izq_cerca);              // Agregando conjunto fuzzy correspondiente al antecedente
+    FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_perfecto  = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
+    if_dist_adelante_lejos_and_dist_izq_perfecto->joinWithAND(adelante_lejos, izq_perfecto);        // Agregando conjunto fuzzy correspondiente al antecedente
+    FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_lejos     = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
+    if_dist_adelante_lejos_and_dist_izq_lejos->joinWithAND(adelante_lejos, izq_lejos);              // Agregando conjunto fuzzy correspondiente al antecedente
+    FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_muy_lejos = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
+    if_dist_adelante_lejos_and_dist_izq_muy_lejos->joinWithAND(adelante_lejos, izq_muy_lejos);      // Agregando conjunto fuzzy correspondiente al antecedente
+    
+    //Declaracion de consecuentes
+    FuzzyRuleConsequent* then_vel_adelante_rapido = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
+    then_vel_adelante_rapido->addOutput(adelante_rapido);                      // Agregando FuzzySet correspondiente a la consecuencia
+    FuzzyRuleConsequent* then_vel_adelante        = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
+    then_vel_adelante->addOutput(adelante);                                    // Agregando FuzzySet correspondiente a la consecuencia
+    FuzzyRuleConsequent* then_vel_atras           = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
+    then_vel_atras->addOutput(atras);                                          // Agregando FuzzySet correspondiente a la consecuencia
+    
+    //Reglas del motor rueda izquierda
+    // FuzzyRule 1 "IF adelante = cerca and izquierda = muy cerca THEN vel = adelante rapido"
+    FuzzyRule* fuzzyRule01 = new FuzzyRule(1, if_dist_adelante_cerca_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule01); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 2 "IF adelante = cerca and izquierda = cerca THEN vel = adelante rapido"
+    FuzzyRule* fuzzyRule02 = new FuzzyRule(2, if_dist_adelante_cerca_and_dist_izq_cerca, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule02); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 3 "IF adelante = cerca and izquierda = perfecto THEN vel = adelante rapido"
+    FuzzyRule* fuzzyRule03 = new FuzzyRule(3, if_dist_adelante_cerca_and_dist_izq_perfecto, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule03); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 4 "IF adelante = cerca and izquierda = lejos THEN vel = adelante rapido"
+    FuzzyRule* fuzzyRule04 = new FuzzyRule(4, if_dist_adelante_cerca_and_dist_izq_lejos, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule04); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 5 "IF adelante = cerca and izquierda = muy lejos THEN vel = adelante rapido"
+    FuzzyRule* fuzzyRule05 = new FuzzyRule(5, if_dist_adelante_cerca_and_dist_izq_muy_lejos, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule05); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 6 "IF adelante = bien and izquierda = muy cerca THEN vel = adelante rapido"
+    FuzzyRule* fuzzyRule06 = new FuzzyRule(6, if_dist_adelante_bien_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule06); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 7 "IF adelante = bien and izquierda = cerca THEN vel = adelante"
+    FuzzyRule* fuzzyRule07 = new FuzzyRule(7, if_dist_adelante_bien_and_dist_izq_cerca, then_vel_adelante);  
+    fuzzy->addFuzzyRule(fuzzyRule07); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 8 "IF adelante = bien and izquierda = perfecto THEN vel = adelante"
+    FuzzyRule* fuzzyRule08 = new FuzzyRule(8, if_dist_adelante_bien_and_dist_izq_perfecto, then_vel_adelante);  
+    fuzzy->addFuzzyRule(fuzzyRule08); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 9 "IF adelante = bien and izquierda = lejos THEN vel = adelante"
+    FuzzyRule* fuzzyRule09 = new FuzzyRule(9, if_dist_adelante_bien_and_dist_izq_lejos, then_vel_adelante);  
+    fuzzy->addFuzzyRule(fuzzyRule09); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 10 "IF adelante = bien and izquierda = muy lejos THEN vel = adelante"
+    FuzzyRule* fuzzyRule010 = new FuzzyRule(10, if_dist_adelante_bien_and_dist_izq_muy_lejos, then_vel_adelante);  
+    fuzzy->addFuzzyRule(fuzzyRule010); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 11 "IF adelante = lejos and izquierda = muy cerca THEN vel = adelante rapido"
+    FuzzyRule* fuzzyRule011 = new FuzzyRule(11, if_dist_adelante_lejos_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule011); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 12 "IF adelante = lejos and izquierda = cerca THEN vel = adelante"
+    FuzzyRule* fuzzyRule012 = new FuzzyRule(12, if_dist_adelante_lejos_and_dist_izq_cerca, then_vel_adelante);  
+    fuzzy->addFuzzyRule(fuzzyRule012); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 13 "IF adelante = lejos and izquierda = perfecto THEN vel = adelante rapido"
+    FuzzyRule* fuzzyRule013 = new FuzzyRule(13, if_dist_adelante_lejos_and_dist_izq_perfecto, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule013); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 14 "IF adelante = lejos and izquierda = lejos THEN vel = atras"
+    FuzzyRule* fuzzyRule014 = new FuzzyRule(14, if_dist_adelante_lejos_and_dist_izq_lejos, then_vel_atras);  
+    fuzzy->addFuzzyRule(fuzzyRule014); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 15 "IF adelante = lejos and izquierda = muy lejos THEN vel = adelante rapido"
+    FuzzyRule* fuzzyRule015 = new FuzzyRule(15, if_dist_adelante_lejos_and_dist_izq_muy_lejos, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule015); // Agrega regla difusa al objeto difuso.
+
+    ////Reglas del motor rueda derecha
+    // FuzzyRule 16 "IF adelante = cerca and izquierda = muy cerca THEN vel = atras rapido"
+    FuzzyRule* fuzzyRule016 = new FuzzyRule(16, if_dist_adelante_cerca_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule016); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 17 "IF adelante = cerca and izquierda = cerca THEN vel = atras rapido"
+    FuzzyRule* fuzzyRule017 = new FuzzyRule(17, if_dist_adelante_cerca_and_dist_izq_cerca, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule017); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 18 "IF adelante = cerca and izquierda = perfecto THEN vel = atras rapido"
+    FuzzyRule* fuzzyRule018 = new FuzzyRule(18, if_dist_adelante_cerca_and_dist_izq_perfecto, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule018); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 19 "IF adelante = cerca and izquierda = lejos THEN vel = atras rapido"
+    FuzzyRule* fuzzyRule019 = new FuzzyRule(19, if_dist_adelante_cerca_and_dist_izq_lejos, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule019); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 20 "IF adelante = cerca and izquierda = muy lejos THEN vel = atras rapido"
+    FuzzyRule* fuzzyRule020 = new FuzzyRule(20, if_dist_adelante_cerca_and_dist_izq_muy_lejos, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule020); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 21 "IF adelante = bien and izquierda = muy cerca THEN vel = atras rapido"
+    FuzzyRule* fuzzyRule021 = new FuzzyRule(21, if_dist_adelante_bien_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule021); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 22 "IF adelante = bien and izquierda = cerca THEN vel = atras"
+    FuzzyRule* fuzzyRule022 = new FuzzyRule(22, if_dist_adelante_bien_and_dist_izq_cerca, then_vel_adelante);  
+    fuzzy->addFuzzyRule(fuzzyRule022); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 23 "IF adelante = bien and izquierda = perfecto THEN vel = atras"
+    FuzzyRule* fuzzyRule023 = new FuzzyRule(23, if_dist_adelante_bien_and_dist_izq_perfecto, then_vel_adelante);  
+    fuzzy->addFuzzyRule(fuzzyRule023); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 24 "IF adelante = bien and izquierda = lejos THEN vel = atras"
+    FuzzyRule* fuzzyRule024 = new FuzzyRule(24, if_dist_adelante_bien_and_dist_izq_lejos, then_vel_adelante);  
+    fuzzy->addFuzzyRule(fuzzyRule024); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 25 "IF adelante = bien and izquierda = muy lejos THEN vel = atras"
+    FuzzyRule* fuzzyRule025 = new FuzzyRule(25, if_dist_adelante_bien_and_dist_izq_muy_lejos, then_vel_adelante);  
+    fuzzy->addFuzzyRule(fuzzyRule025); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 26 "IF adelante = lejos and izquierda = muy cerca THEN vel = detener"
+    FuzzyRule* fuzzyRule026 = new FuzzyRule(26, if_dist_adelante_lejos_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule026); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 27 "IF adelante = lejos and izquierda = cerca THEN vel = atras"
+    FuzzyRule* fuzzyRule027 = new FuzzyRule(27, if_dist_adelante_lejos_and_dist_izq_cerca, then_vel_adelante);  
+    fuzzy->addFuzzyRule(fuzzyRule027); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 28 "IF adelante = lejos and izquierda = perfecto THEN vel = adelante rapido"
+    FuzzyRule* fuzzyRule028 = new FuzzyRule(28, if_dist_adelante_lejos_and_dist_izq_perfecto, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule028); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 29 "IF adelante = lejos and izquierda = lejos THEN vel = adelante"
+    FuzzyRule* fuzzyRule029 = new FuzzyRule(29, if_dist_adelante_lejos_and_dist_izq_lejos, then_vel_atras);  
+    fuzzy->addFuzzyRule(fuzzyRule029); // Agrega regla difusa al objeto difuso.
+
+    // FuzzyRule 30 "IF adelante = lejos and izquierda = muy lejos THEN vel = adelante rapido"
+    FuzzyRule* fuzzyRule030 = new FuzzyRule(30, if_dist_adelante_lejos_and_dist_izq_muy_lejos, then_vel_adelante_rapido);  
+    fuzzy->addFuzzyRule(fuzzyRule030); // Agrega regla difusa al objeto difuso.
+  }
 
 
     Serial.println("Setup hecho.");
@@ -289,166 +447,39 @@ class CortadoraClass{
     }
   }
 
+  int hay_obstaculo2(int trig, int echo){
+    long distancia;
+    long tiempo;
+
+    digitalWrite(trig,LOW); /* Por cuestión de estabilización del sensor*/
+    delayMicroseconds(2);
+    digitalWrite(trig, HIGH); /* envío del pulso ultrasónico*/
+    delayMicroseconds(10);
+    digitalWrite(trig,LOW);      
+    /* Función para medir la longitud del pulso entrante. Mide el tiempo que transcurrido entre el envío del pulso ultrasónico y cuando el sensor recibe el rebote*/
+    tiempo=pulseIn(echo, HIGH);       
+    /*fórmula para calcular la distancia obteniendo un valor entero*/
+
+    return distancia = int((tiempo/2)/29); 
+      
+    // Serial.print("Distancia ");
+    // Serial.print(distancia);
+    // Serial.print(" cm - Pin echo: ");
+    // Serial.println(echo);
+  }
+
   void reglas(){
 
-    FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_muy_cerca = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
-    if_dist_adelante_cerca_and_dist_izq_muy_cerca->joinWithAND(adelante_cerca, izq_muy_cerca);     // Agregando conjunto fuzzy correspondiente al antecedente
-    FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_cerca     = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
-    if_dist_adelante_cerca_and_dist_izq_cerca->joinWithAND(adelante_cerca, izq_cerca);             // Agregando conjunto fuzzy correspondiente al antecedente
-    FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_perfecto = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
-    if_dist_adelante_cerca_and_dist_izq_perfecto->joinWithAND(adelante_cerca, izq_perfecto);       // Agregando conjunto fuzzy correspondiente al antecedente
-    FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_lejos     = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
-    if_dist_adelante_cerca_and_dist_izq_lejos->joinWithAND(adelante_cerca, izq_lejos);             // Agregando conjunto fuzzy correspondiente al antecedente
-    FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_muy_lejos = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
-    if_dist_adelante_cerca_and_dist_izq_muy_lejos->joinWithAND(adelante_cerca, izq_muy_lejos);     // Agregando conjunto fuzzy correspondiente al antecedente
-    FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_muy_cerca  = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
-    if_dist_adelante_bien_and_dist_izq_muy_cerca->joinWithAND(adelante_bien, izq_muy_cerca);        // Agregando conjunto fuzzy correspondiente al antecedente                                        // Agregando FuzzySet correspondiente a la consecuencia
-    FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_cerca      = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
-    if_dist_adelante_bien_and_dist_izq_cerca->joinWithAND(adelante_bien, izq_cerca);                // Agregando conjunto fuzzy correspondiente al antecedente
-    FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_perfecto   = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
-    if_dist_adelante_bien_and_dist_izq_perfecto->joinWithAND(adelante_bien, izq_perfecto);          // Agregando conjunto fuzzy correspondiente al antecedente                                         // Agregando FuzzySet correspondiente a la consecuencia
-    FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_lejos      = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
-    if_dist_adelante_bien_and_dist_izq_lejos->joinWithAND(adelante_bien, izq_lejos);                // Agregando conjunto fuzzy correspondiente al antecedente                                         // Agregando FuzzySet correspondiente a la consecuencia
-    FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_muy_lejos  = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
-    if_dist_adelante_bien_and_dist_izq_muy_lejos->joinWithAND(adelante_bien, izq_muy_lejos);        // Agregando conjunto fuzzy correspondiente al antecedente
-    FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_muy_cerca = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
-    if_dist_adelante_lejos_and_dist_izq_muy_cerca->joinWithAND(adelante_lejos, izq_muy_cerca);      // Agregando conjunto fuzzy correspondiente al antecedente
-    FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_cerca     = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
-    if_dist_adelante_lejos_and_dist_izq_cerca->joinWithAND(adelante_lejos, izq_cerca);              // Agregando conjunto fuzzy correspondiente al antecedente
-    FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_perfecto  = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
-    if_dist_adelante_lejos_and_dist_izq_perfecto->joinWithAND(adelante_lejos, izq_perfecto);        // Agregando conjunto fuzzy correspondiente al antecedente
-    FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_lejos     = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
-    if_dist_adelante_lejos_and_dist_izq_lejos->joinWithAND(adelante_lejos, izq_lejos);              // Agregando conjunto fuzzy correspondiente al antecedente
-    FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_muy_lejos = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
-    if_dist_adelante_lejos_and_dist_izq_muy_lejos->joinWithAND(adelante_lejos, izq_muy_lejos);      // Agregando conjunto fuzzy correspondiente al antecedente
+    fuzzy->setInput(1, hay_obstaculo2(US_ADELANTE_TRIG, US_ADELANTE_ECHO)); //Agrega variable de entrada dist al objeto difuso
+    fuzzy->setInput(2, hay_obstaculo2(US_IZQ_TRIG, US_IZQ_ECHO));  //Agrega variable de entrada dist al objeto difuso
     
-    FuzzyRuleConsequent* then_vel_adelante_rapido = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
-    then_vel_adelante_rapido->addOutput(adelante_rapido);                      // Agregando FuzzySet correspondiente a la consecuencia
-    FuzzyRuleConsequent* then_vel_adelante        = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
-    then_vel_adelante->addOutput(adelante);                                    // Agregando FuzzySet correspondiente a la consecuencia
-    FuzzyRuleConsequent* then_vel_atras           = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
-    then_vel_atras->addOutput(atras);                                          // Agregando FuzzySet correspondiente a la consecuencia
+    float a, b, c, d, e;
+    a= atras_rapido ->getPertinence();
+    b= atras ->getPertinence();
+    c= detener ->getPertinence();
+    d= adelante ->getPertinence();
+    e= adelante_rapido ->getPertinence();
+    fuzzy->fuzzify(); // Fuzificación
+
     
-    //Motor rueda izquierda
-    // FuzzyRule 1 "IF adelante = cerca and izquierda = muy cerca THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule01 = new FuzzyRule(1, if_dist_adelante_cerca_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule01); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 2 "IF adelante = cerca and izquierda = cerca THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule02 = new FuzzyRule(2, if_dist_adelante_cerca_and_dist_izq_cerca, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule02); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 3 "IF adelante = cerca and izquierda = perfecto THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule03 = new FuzzyRule(3, if_dist_adelante_cerca_and_dist_izq_perfecto, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule03); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 4 "IF adelante = cerca and izquierda = lejos THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule04 = new FuzzyRule(4, if_dist_adelante_cerca_and_dist_izq_lejos, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule04); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 5 "IF adelante = cerca and izquierda = muy lejos THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule05 = new FuzzyRule(5, if_dist_adelante_cerca_and_dist_izq_muy_lejos, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule05); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 6 "IF adelante = bien and izquierda = muy cerca THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule06 = new FuzzyRule(6, if_dist_adelante_bien_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule06); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 7 "IF adelante = bien and izquierda = cerca THEN vel = adelante"
-    FuzzyRule* fuzzyRule07 = new FuzzyRule(7, if_dist_adelante_bien_and_dist_izq_cerca, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule07); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 8 "IF adelante = bien and izquierda = perfecto THEN vel = adelante"
-    FuzzyRule* fuzzyRule08 = new FuzzyRule(8, if_dist_adelante_bien_and_dist_izq_perfecto, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule08); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 9 "IF adelante = bien and izquierda = lejos THEN vel = adelante"
-    FuzzyRule* fuzzyRule09 = new FuzzyRule(9, if_dist_adelante_bien_and_dist_izq_lejos, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule09); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 10 "IF adelante = bien and izquierda = muy lejos THEN vel = adelante"
-    FuzzyRule* fuzzyRule010 = new FuzzyRule(10, if_dist_adelante_bien_and_dist_izq_muy_lejos, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule010); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 11 "IF adelante = lejos and izquierda = muy cerca THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule011 = new FuzzyRule(11, if_dist_adelante_lejos_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule011); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 12 "IF adelante = lejos and izquierda = cerca THEN vel = adelante"
-    FuzzyRule* fuzzyRule012 = new FuzzyRule(12, if_dist_adelante_lejos_and_dist_izq_cerca, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule012); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 13 "IF adelante = lejos and izquierda = perfecto THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule013 = new FuzzyRule(13, if_dist_adelante_lejos_and_dist_izq_perfecto, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule013); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 14 "IF adelante = lejos and izquierda = lejos THEN vel = atras"
-    FuzzyRule* fuzzyRule014 = new FuzzyRule(14, if_dist_adelante_lejos_and_dist_izq_lejos, then_vel_atras);  
-    fuzzy->addFuzzyRule(fuzzyRule014); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 15 "IF adelante = lejos and izquierda = muy lejos THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule015 = new FuzzyRule(15, if_dist_adelante_lejos_and_dist_izq_muy_lejos, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule015); // Agrega regla difusa al objeto difuso.
-
-    //Motor rueda derecha:
-    // FuzzyRule 16 "IF adelante = cerca and izquierda = muy cerca THEN vel = atras rapido"
-    FuzzyRule* fuzzyRule016 = new FuzzyRule(16, if_dist_adelante_cerca_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule016); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 17 "IF adelante = cerca and izquierda = cerca THEN vel = atras rapido"
-    FuzzyRule* fuzzyRule017 = new FuzzyRule(17, if_dist_adelante_cerca_and_dist_izq_cerca, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule017); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 18 "IF adelante = cerca and izquierda = perfecto THEN vel = atras rapido"
-    FuzzyRule* fuzzyRule018 = new FuzzyRule(18, if_dist_adelante_cerca_and_dist_izq_perfecto, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule018); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 19 "IF adelante = cerca and izquierda = lejos THEN vel = atras rapido"
-    FuzzyRule* fuzzyRule019 = new FuzzyRule(19, if_dist_adelante_cerca_and_dist_izq_lejos, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule019); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 20 "IF adelante = cerca and izquierda = muy lejos THEN vel = atras rapido"
-    FuzzyRule* fuzzyRule020 = new FuzzyRule(20, if_dist_adelante_cerca_and_dist_izq_muy_lejos, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule020); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 21 "IF adelante = bien and izquierda = muy cerca THEN vel = atras rapido"
-    FuzzyRule* fuzzyRule021 = new FuzzyRule(21, if_dist_adelante_bien_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule021); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 22 "IF adelante = bien and izquierda = cerca THEN vel = atras"
-    FuzzyRule* fuzzyRule022 = new FuzzyRule(22, if_dist_adelante_bien_and_dist_izq_cerca, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule022); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 23 "IF adelante = bien and izquierda = perfecto THEN vel = atras"
-    FuzzyRule* fuzzyRule023 = new FuzzyRule(23, if_dist_adelante_bien_and_dist_izq_perfecto, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule023); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 24 "IF adelante = bien and izquierda = lejos THEN vel = atras"
-    FuzzyRule* fuzzyRule024 = new FuzzyRule(24, if_dist_adelante_bien_and_dist_izq_lejos, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule024); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 25 "IF adelante = bien and izquierda = muy lejos THEN vel = atras"
-    FuzzyRule* fuzzyRule025 = new FuzzyRule(25, if_dist_adelante_bien_and_dist_izq_muy_lejos, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule025); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 26 "IF adelante = lejos and izquierda = muy cerca THEN vel = detener"
-    FuzzyRule* fuzzyRule026 = new FuzzyRule(26, if_dist_adelante_lejos_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule026); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 27 "IF adelante = lejos and izquierda = cerca THEN vel = atras"
-    FuzzyRule* fuzzyRule027 = new FuzzyRule(27, if_dist_adelante_lejos_and_dist_izq_cerca, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule027); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 28 "IF adelante = lejos and izquierda = perfecto THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule028 = new FuzzyRule(28, if_dist_adelante_lejos_and_dist_izq_perfecto, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule028); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 29 "IF adelante = lejos and izquierda = lejos THEN vel = adelante"
-    FuzzyRule* fuzzyRule029 = new FuzzyRule(29, if_dist_adelante_lejos_and_dist_izq_lejos, then_vel_atras);  
-    fuzzy->addFuzzyRule(fuzzyRule029); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 30 "IF adelante = lejos and izquierda = muy lejos THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule030 = new FuzzyRule(30, if_dist_adelante_lejos_and_dist_izq_muy_lejos, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule030); // Agrega regla difusa al objeto difuso.
-  }
 };
