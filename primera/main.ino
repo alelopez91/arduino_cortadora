@@ -12,11 +12,15 @@ void setup(){
 }
 
 void loop(){
-  if(cortadora.tiene_posicion_inicial == false){
-    cortadora.detectar_posicion_inicial();
-  } else {
-    if (cortadora.busca_contorno == true){
-      cortadora.recorrer_contorno();
-    }
-  }
-};
+  // if(cortadora.tiene_posicion_inicial == false){
+  //   cortadora.detectar_posicion_inicial();
+  //   } else {
+  //     if (cortadora.busca_contorno == true){
+  //       cortadora.recorrer_contorno();
+  //     }
+  //   }
+
+  Serial.println(cortadora.medir(9,8));
+  Serial.println(cortadora.medir(11,10));
+  delay(2000);
+  };

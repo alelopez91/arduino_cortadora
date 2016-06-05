@@ -18,7 +18,10 @@ class CortadoraClass{
     int RD_ADELANTE;
     int RI_ATRAS;
     int RI_ADELANTE;
-    int VELOCIDAD;
+    int VEL_IZQ;
+    int VEL_DER;
+    
+    
 
     // Ultrasonido izquierdo - derecho
     int US_ADELANTE_TRIG;
@@ -43,37 +46,40 @@ class CortadoraClass{
 
     //Conjuntos difusos de salida para la velocidad de los motores
 
-    //Velocidad de motor:
-    FuzzySet* atras_rapido    = new FuzzySet(-200, -200, -140, -100); // Velocidad marcha atras rapida
-    FuzzySet* atras           = new FuzzySet(-120,-60,-60, 0);        // Velocidad marcha atras suave
-    FuzzySet* detener         = new FuzzySet(0, 0, 0, 0);             // Velocidad para detener     
-    FuzzySet* adelante        = new FuzzySet(0,60,60, 120);           // Velocidad hacia adelante
-    FuzzySet* adelante_rapido = new FuzzySet(100, 140, 200, 200);     // Velocidad hacia adelante rapida
+    //Velocidad de motor izquierdo:
+    FuzzySet* izq_detener         = new FuzzySet(0, 0, 0, 0);             // Velocidad para detener     
+    FuzzySet* izq_adelante        = new FuzzySet(0,60,60, 120);           // Velocidad hacia adelante
+    FuzzySet* izq_adelante_rapido = new FuzzySet(100, 140, 200, 200);     // Velocidad hacia adelante rapida
+
+    //Velocidad de motor derecho:
+    FuzzySet* der_detener         = new FuzzySet(0, 0, 0, 0);             // Velocidad para detener     
+    FuzzySet* der_adelante        = new FuzzySet(0,60,60, 120);           // Velocidad hacia adelante
+    FuzzySet* der_adelante_rapido = new FuzzySet(100, 140, 200, 200);     // Velocidad hacia adelante rapida
     
-  public:
+    public:
     bool tiene_posicion_inicial;
     bool busca_contorno;
     bool encontro_pared;
     Fuzzy* fuzzy;
     
 
-  void init(){
-    Serial.println("Comenzando...");
-    tiene_posicion_inicial = false;
-    busca_contorno = false;
-    encontro_pared = false;
-    fuzzy = new Fuzzy();
-    
-    RI_ATRAS = 4;
-    RI_ADELANTE = 5;
-    RD_ADELANTE = 6;
-    RD_ATRAS = 7;
-    US_ADELANTE_ECHO = 8;
-    US_ADELANTE_TRIG = 9;
-    US_IZQ_ECHO = 10;
-    US_IZQ_TRIG = 11;
-    VELOCIDAD = 3;
-    
+    void init(){
+      tiene_posicion_inicial = false;
+      busca_contorno = false;
+      encontro_pared = false;
+      fuzzy = new Fuzzy();
+
+      RI_ATRAS = 4;
+      RI_ADELANTE = 2;
+      RD_ADELANTE = 6;
+      RD_ATRAS = 7;
+      US_ADELANTE_ECHO = 8;
+      US_ADELANTE_TRIG = 9;
+      US_IZQ_ECHO = 10;
+      US_IZQ_TRIG = 11;
+      VEL_IZQ = 3;
+      VEL_DER = 5;
+
     // declaracion de pines dentro de arduino
     pinMode(RI_ATRAS,OUTPUT);
     pinMode(RI_ADELANTE,OUTPUT);
@@ -83,7 +89,11 @@ class CortadoraClass{
     pinMode(US_ADELANTE_ECHO, INPUT);
     pinMode(US_IZQ_TRIG, OUTPUT);
     pinMode(US_IZQ_ECHO, INPUT);
-    pinMode(VELOCIDAD,OUTPUT);
+    pinMode(VEL_IZQ,OUTPUT);
+    pinMode(VEL_DER,OUTPUT);
+
+    
+    
 
     //Estados iniciales de pines
     digitalWrite(RI_ATRAS, LOW);
@@ -110,345 +120,249 @@ class CortadoraClass{
 
     
     //Asignar las fciones de pertenencia de salida rueda izquierda
-    FuzzyOutput* vel_izq = new FuzzyOutput(1);
-    vel_izq->addFuzzySet(atras_rapido);       // Agregar fuzzyset marcha atras rapida
-    vel_izq->addFuzzySet(atras);              // Agregar fuzzyset marcha atras suave
-    vel_izq->addFuzzySet(detener);            // Agregar fuzzyset detener
-    vel_izq->addFuzzySet(adelante);           // Agregar fuzzyset adelante
-    vel_izq->addFuzzySet(adelante_rapido);    // Agregar fuzzyset adelante rapido     
-    fuzzy->addFuzzyOutput(vel_izq);           // Agrega entrada difusa al objeto difuso
+    FuzzyOutput* izq = new FuzzyOutput(1);
+    izq->addFuzzySet(izq_detener);            // Agregar fuzzyset detener
+    izq->addFuzzySet(izq_adelante);           // Agregar fuzzyset adelante
+    izq->addFuzzySet(izq_adelante_rapido);    // Agregar fuzzyset adelante rapido     
+    fuzzy->addFuzzyOutput(izq);           // Agrega entrada difusa al objeto difuso
 
     //Asignar las fciones de pertenencia de salida rueda derecha
-    FuzzyOutput* vel_der = new FuzzyOutput(1);
-    vel_der->addFuzzySet(atras_rapido);       // Agregar fuzzyset marcha atras rapida
-    vel_der->addFuzzySet(atras);              // Agregar fuzzyset marcha atras suave
-    vel_der->addFuzzySet(detener);            // Agregar fuzzyset detener
-    vel_der->addFuzzySet(adelante);           // Agregar fuzzyset adelante
-    vel_der->addFuzzySet(adelante_rapido);    // Agregar fuzzyset adelante rapido     
-    fuzzy->addFuzzyOutput(vel_der);           // Agrega entrada difusa al objeto difuso
+    FuzzyOutput* der = new FuzzyOutput(2);
+    der->addFuzzySet(der_detener);            // Agregar fuzzyset detener
+    der->addFuzzySet(der_adelante);           // Agregar fuzzyset adelante
+    der->addFuzzySet(der_adelante_rapido);    // Agregar fuzzyset adelante rapido     
+    fuzzy->addFuzzyOutput(der);           // Agrega entrada difusa al objeto difuso
     
     //Declaracion de antecedentes
     FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_muy_cerca = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
     if_dist_adelante_cerca_and_dist_izq_muy_cerca->joinWithAND(adelante_cerca, izq_muy_cerca);     // Agregando conjunto fuzzy correspondiente al antecedente
+
     FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_cerca     = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
     if_dist_adelante_cerca_and_dist_izq_cerca->joinWithAND(adelante_cerca, izq_cerca);             // Agregando conjunto fuzzy correspondiente al antecedente
+
     FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_perfecto = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
     if_dist_adelante_cerca_and_dist_izq_perfecto->joinWithAND(adelante_cerca, izq_perfecto);       // Agregando conjunto fuzzy correspondiente al antecedente
+
     FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_lejos     = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
     if_dist_adelante_cerca_and_dist_izq_lejos->joinWithAND(adelante_cerca, izq_lejos);             // Agregando conjunto fuzzy correspondiente al antecedente
+
     FuzzyRuleAntecedent* if_dist_adelante_cerca_and_dist_izq_muy_lejos = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
     if_dist_adelante_cerca_and_dist_izq_muy_lejos->joinWithAND(adelante_cerca, izq_muy_lejos);     // Agregando conjunto fuzzy correspondiente al antecedente
+
     FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_muy_cerca  = new FuzzyRuleAntecedent();// Inicializando antecedente de la expresión
     if_dist_adelante_bien_and_dist_izq_muy_cerca->joinWithAND(adelante_bien, izq_muy_cerca);        // Agregando conjunto fuzzy correspondiente al antecedente                                        // Agregando FuzzySet correspondiente a la consecuencia
+
     FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_cerca      = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
     if_dist_adelante_bien_and_dist_izq_cerca->joinWithAND(adelante_bien, izq_cerca);                // Agregando conjunto fuzzy correspondiente al antecedente
+
     FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_perfecto   = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
     if_dist_adelante_bien_and_dist_izq_perfecto->joinWithAND(adelante_bien, izq_perfecto);          // Agregando conjunto fuzzy correspondiente al antecedente                                         // Agregando FuzzySet correspondiente a la consecuencia
+
     FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_lejos      = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
     if_dist_adelante_bien_and_dist_izq_lejos->joinWithAND(adelante_bien, izq_lejos);                // Agregando conjunto fuzzy correspondiente al antecedente                                         // Agregando FuzzySet correspondiente a la consecuencia
+
     FuzzyRuleAntecedent* if_dist_adelante_bien_and_dist_izq_muy_lejos  = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
     if_dist_adelante_bien_and_dist_izq_muy_lejos->joinWithAND(adelante_bien, izq_muy_lejos);        // Agregando conjunto fuzzy correspondiente al antecedente
+
     FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_muy_cerca = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
     if_dist_adelante_lejos_and_dist_izq_muy_cerca->joinWithAND(adelante_lejos, izq_muy_cerca);      // Agregando conjunto fuzzy correspondiente al antecedente
+
     FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_cerca     = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
     if_dist_adelante_lejos_and_dist_izq_cerca->joinWithAND(adelante_lejos, izq_cerca);              // Agregando conjunto fuzzy correspondiente al antecedente
+
     FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_perfecto  = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
     if_dist_adelante_lejos_and_dist_izq_perfecto->joinWithAND(adelante_lejos, izq_perfecto);        // Agregando conjunto fuzzy correspondiente al antecedente
+
     FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_lejos     = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
     if_dist_adelante_lejos_and_dist_izq_lejos->joinWithAND(adelante_lejos, izq_lejos);              // Agregando conjunto fuzzy correspondiente al antecedente
+
     FuzzyRuleAntecedent* if_dist_adelante_lejos_and_dist_izq_muy_lejos = new FuzzyRuleAntecedent(); // Inicializando antecedente de la expresión
     if_dist_adelante_lejos_and_dist_izq_muy_lejos->joinWithAND(adelante_lejos, izq_muy_lejos);      // Agregando conjunto fuzzy correspondiente al antecedente
+
     
     //Declaracion de consecuentes
-    FuzzyRuleConsequent* then_vel_adelante_rapido = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
-    then_vel_adelante_rapido->addOutput(adelante_rapido);                      // Agregando FuzzySet correspondiente a la consecuencia
-    FuzzyRuleConsequent* then_vel_adelante        = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
-    then_vel_adelante->addOutput(adelante);                                    // Agregando FuzzySet correspondiente a la consecuencia
-    FuzzyRuleConsequent* then_vel_atras           = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
-    then_vel_atras->addOutput(atras);                                          // Agregando FuzzySet correspondiente a la consecuencia
+
+    FuzzyRuleConsequent* then_vel_izq_adelante_and_der_adelante = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
+    then_vel_izq_adelante_and_der_adelante->addOutput(izq_adelante);                                    // Agregando FuzzySet correspondiente a la consecuencia
+    then_vel_izq_adelante_and_der_adelante->addOutput(der_adelante);                                    // Agregando FuzzySet correspondiente a la consecuencia
     
+    FuzzyRuleConsequent* then_vel_izq_adelante_rapido_and_der_detener = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
+    then_vel_izq_adelante_rapido_and_der_detener->addOutput(izq_adelante_rapido);                                          // Agregando FuzzySet correspondiente a la consecuencia
+    then_vel_izq_adelante_rapido_and_der_detener->addOutput(der_detener);                                          // Agregando FuzzySet correspondiente a la consecuencia
+    
+    FuzzyRuleConsequent* then_vel_izq_adelante_rapido_and_der_adelante_rapido = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
+    then_vel_izq_adelante_rapido_and_der_adelante_rapido->addOutput(izq_adelante_rapido);                      // Agregando FuzzySet correspondiente a la consecuencia
+    then_vel_izq_adelante_rapido_and_der_adelante_rapido->addOutput(der_adelante_rapido);
+
+
     //Reglas del motor rueda izquierda
-    // FuzzyRule 1 "IF adelante = cerca and izquierda = muy cerca THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule01 = new FuzzyRule(1, if_dist_adelante_cerca_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
+    // FuzzyRule 1 "IF adelante = cerca and izquierda = muy cerca THEN vel = izq adelante rapido y der atras rapido"
+    FuzzyRule* fuzzyRule01 = new FuzzyRule(1, if_dist_adelante_cerca_and_dist_izq_muy_cerca, then_vel_izq_adelante_rapido_and_der_adelante_rapido);  
     fuzzy->addFuzzyRule(fuzzyRule01); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 2 "IF adelante = cerca and izquierda = cerca THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule02 = new FuzzyRule(2, if_dist_adelante_cerca_and_dist_izq_cerca, then_vel_adelante_rapido);  
+    // FuzzyRule 2 "IF adelante = cerca and izquierda = cerca THEN vel = izq adelante rapido y der atras rapido"
+    FuzzyRule* fuzzyRule02 = new FuzzyRule(2, if_dist_adelante_cerca_and_dist_izq_cerca, then_vel_izq_adelante_rapido_and_der_adelante_rapido);  
     fuzzy->addFuzzyRule(fuzzyRule02); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 3 "IF adelante = cerca and izquierda = perfecto THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule03 = new FuzzyRule(3, if_dist_adelante_cerca_and_dist_izq_perfecto, then_vel_adelante_rapido);  
+    // FuzzyRule 3 "IF adelante = cerca and izquierda = perfecto THEN vel = izq adelante rapido y der atras rapido"
+    FuzzyRule* fuzzyRule03 = new FuzzyRule(3, if_dist_adelante_cerca_and_dist_izq_perfecto, then_vel_izq_adelante_rapido_and_der_adelante_rapido);  
     fuzzy->addFuzzyRule(fuzzyRule03); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 4 "IF adelante = cerca and izquierda = lejos THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule04 = new FuzzyRule(4, if_dist_adelante_cerca_and_dist_izq_lejos, then_vel_adelante_rapido);  
+    // FuzzyRule 4 "IF adelante = cerca and izquierda = lejos THEN vel = izq adelante rapido y der atras rapido"
+    FuzzyRule* fuzzyRule04 = new FuzzyRule(4, if_dist_adelante_cerca_and_dist_izq_lejos, then_vel_izq_adelante_rapido_and_der_adelante_rapido);  
     fuzzy->addFuzzyRule(fuzzyRule04); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 5 "IF adelante = cerca and izquierda = muy lejos THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule05 = new FuzzyRule(5, if_dist_adelante_cerca_and_dist_izq_muy_lejos, then_vel_adelante_rapido);  
+    // FuzzyRule 5 "IF adelante = cerca and izquierda = muy lejos THEN vel = izq adelante rapido y der atras rapido"
+    FuzzyRule* fuzzyRule05 = new FuzzyRule(5, if_dist_adelante_cerca_and_dist_izq_muy_lejos, then_vel_izq_adelante_rapido_and_der_adelante_rapido);  
     fuzzy->addFuzzyRule(fuzzyRule05); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 6 "IF adelante = bien and izquierda = muy cerca THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule06 = new FuzzyRule(6, if_dist_adelante_bien_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
+    // FuzzyRule 6 "IF adelante = bien and izquierda = muy cerca THEN vel = izq adelante rapido y der atras rapido"
+    FuzzyRule* fuzzyRule06 = new FuzzyRule(6, if_dist_adelante_bien_and_dist_izq_muy_cerca, then_vel_izq_adelante_rapido_and_der_adelante_rapido);  
     fuzzy->addFuzzyRule(fuzzyRule06); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 7 "IF adelante = bien and izquierda = cerca THEN vel = adelante"
-    FuzzyRule* fuzzyRule07 = new FuzzyRule(7, if_dist_adelante_bien_and_dist_izq_cerca, then_vel_adelante);  
+    // FuzzyRule 7 "IF adelante = bien and izquierda = cerca THEN vel = izq adelante y der atras"
+    FuzzyRule* fuzzyRule07 = new FuzzyRule(7, if_dist_adelante_bien_and_dist_izq_cerca, then_vel_izq_adelante_and_der_adelante);  
     fuzzy->addFuzzyRule(fuzzyRule07); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 8 "IF adelante = bien and izquierda = perfecto THEN vel = adelante"
-    FuzzyRule* fuzzyRule08 = new FuzzyRule(8, if_dist_adelante_bien_and_dist_izq_perfecto, then_vel_adelante);  
+    // FuzzyRule 8 "IF adelante = bien and izquierda = perfecto THEN vel = izq adelante y der atras"
+    FuzzyRule* fuzzyRule08 = new FuzzyRule(8, if_dist_adelante_bien_and_dist_izq_perfecto, then_vel_izq_adelante_and_der_adelante);  
     fuzzy->addFuzzyRule(fuzzyRule08); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 9 "IF adelante = bien and izquierda = lejos THEN vel = adelante"
-    FuzzyRule* fuzzyRule09 = new FuzzyRule(9, if_dist_adelante_bien_and_dist_izq_lejos, then_vel_adelante);  
+    // FuzzyRule 9 "IF adelante = bien and izquierda = lejos THEN vel = izq adelante y der atras"
+    FuzzyRule* fuzzyRule09 = new FuzzyRule(9, if_dist_adelante_bien_and_dist_izq_lejos, then_vel_izq_adelante_and_der_adelante);  
     fuzzy->addFuzzyRule(fuzzyRule09); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 10 "IF adelante = bien and izquierda = muy lejos THEN vel = adelante"
-    FuzzyRule* fuzzyRule010 = new FuzzyRule(10, if_dist_adelante_bien_and_dist_izq_muy_lejos, then_vel_adelante);  
+    // FuzzyRule 10 "IF adelante = bien and izquierda = muy lejos THEN vel = izq adelante y der atras"
+    FuzzyRule* fuzzyRule010 = new FuzzyRule(10, if_dist_adelante_bien_and_dist_izq_muy_lejos, then_vel_izq_adelante_and_der_adelante);  
     fuzzy->addFuzzyRule(fuzzyRule010); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 11 "IF adelante = lejos and izquierda = muy cerca THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule011 = new FuzzyRule(11, if_dist_adelante_lejos_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
+    // FuzzyRule 11 "IF adelante = lejos and izquierda = muy cerca THEN vel = izq adelante rapido y der detener"
+    FuzzyRule* fuzzyRule011 = new FuzzyRule(11, if_dist_adelante_lejos_and_dist_izq_muy_cerca, then_vel_izq_adelante_rapido_and_der_detener);  
     fuzzy->addFuzzyRule(fuzzyRule011); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 12 "IF adelante = lejos and izquierda = cerca THEN vel = adelante"
-    FuzzyRule* fuzzyRule012 = new FuzzyRule(12, if_dist_adelante_lejos_and_dist_izq_cerca, then_vel_adelante);  
+    // FuzzyRule 12 "IF adelante = lejos and izquierda = cerca THEN vel = izq adelante y der atras"
+    FuzzyRule* fuzzyRule012 = new FuzzyRule(12, if_dist_adelante_lejos_and_dist_izq_cerca, then_vel_izq_adelante_and_der_adelante);  
     fuzzy->addFuzzyRule(fuzzyRule012); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 13 "IF adelante = lejos and izquierda = perfecto THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule013 = new FuzzyRule(13, if_dist_adelante_lejos_and_dist_izq_perfecto, then_vel_adelante_rapido);  
+    // FuzzyRule 13 "IF adelante = lejos and izquierda = perfecto THEN vel = izq y der adelante rapido"
+    FuzzyRule* fuzzyRule013 = new FuzzyRule(13, if_dist_adelante_lejos_and_dist_izq_perfecto, then_vel_izq_adelante_rapido_and_der_adelante_rapido);  
     fuzzy->addFuzzyRule(fuzzyRule013); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 14 "IF adelante = lejos and izquierda = lejos THEN vel = atras"
-    FuzzyRule* fuzzyRule014 = new FuzzyRule(14, if_dist_adelante_lejos_and_dist_izq_lejos, then_vel_atras);  
+    // FuzzyRule 14 "IF adelante = lejos and izquierda = lejos THEN vel = izq atras y der adelante"
+    FuzzyRule* fuzzyRule014 = new FuzzyRule(14, if_dist_adelante_lejos_and_dist_izq_lejos, then_vel_izq_adelante_and_der_adelante);  
     fuzzy->addFuzzyRule(fuzzyRule014); // Agrega regla difusa al objeto difuso.
 
-    // FuzzyRule 15 "IF adelante = lejos and izquierda = muy lejos THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule015 = new FuzzyRule(15, if_dist_adelante_lejos_and_dist_izq_muy_lejos, then_vel_adelante_rapido);  
+    // FuzzyRule 15 "IF adelante = lejos and izquierda = muy lejos THEN vel = izq y der adelante rapido"
+    FuzzyRule* fuzzyRule015 = new FuzzyRule(15, if_dist_adelante_lejos_and_dist_izq_muy_lejos, then_vel_izq_adelante_rapido_and_der_adelante_rapido);  
     fuzzy->addFuzzyRule(fuzzyRule015); // Agrega regla difusa al objeto difuso.
 
-    ////Reglas del motor rueda derecha
-    // FuzzyRule 16 "IF adelante = cerca and izquierda = muy cerca THEN vel = atras rapido"
-    FuzzyRule* fuzzyRule016 = new FuzzyRule(16, if_dist_adelante_cerca_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule016); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 17 "IF adelante = cerca and izquierda = cerca THEN vel = atras rapido"
-    FuzzyRule* fuzzyRule017 = new FuzzyRule(17, if_dist_adelante_cerca_and_dist_izq_cerca, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule017); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 18 "IF adelante = cerca and izquierda = perfecto THEN vel = atras rapido"
-    FuzzyRule* fuzzyRule018 = new FuzzyRule(18, if_dist_adelante_cerca_and_dist_izq_perfecto, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule018); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 19 "IF adelante = cerca and izquierda = lejos THEN vel = atras rapido"
-    FuzzyRule* fuzzyRule019 = new FuzzyRule(19, if_dist_adelante_cerca_and_dist_izq_lejos, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule019); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 20 "IF adelante = cerca and izquierda = muy lejos THEN vel = atras rapido"
-    FuzzyRule* fuzzyRule020 = new FuzzyRule(20, if_dist_adelante_cerca_and_dist_izq_muy_lejos, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule020); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 21 "IF adelante = bien and izquierda = muy cerca THEN vel = atras rapido"
-    FuzzyRule* fuzzyRule021 = new FuzzyRule(21, if_dist_adelante_bien_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule021); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 22 "IF adelante = bien and izquierda = cerca THEN vel = atras"
-    FuzzyRule* fuzzyRule022 = new FuzzyRule(22, if_dist_adelante_bien_and_dist_izq_cerca, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule022); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 23 "IF adelante = bien and izquierda = perfecto THEN vel = atras"
-    FuzzyRule* fuzzyRule023 = new FuzzyRule(23, if_dist_adelante_bien_and_dist_izq_perfecto, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule023); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 24 "IF adelante = bien and izquierda = lejos THEN vel = atras"
-    FuzzyRule* fuzzyRule024 = new FuzzyRule(24, if_dist_adelante_bien_and_dist_izq_lejos, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule024); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 25 "IF adelante = bien and izquierda = muy lejos THEN vel = atras"
-    FuzzyRule* fuzzyRule025 = new FuzzyRule(25, if_dist_adelante_bien_and_dist_izq_muy_lejos, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule025); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 26 "IF adelante = lejos and izquierda = muy cerca THEN vel = detener"
-    FuzzyRule* fuzzyRule026 = new FuzzyRule(26, if_dist_adelante_lejos_and_dist_izq_muy_cerca, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule026); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 27 "IF adelante = lejos and izquierda = cerca THEN vel = atras"
-    FuzzyRule* fuzzyRule027 = new FuzzyRule(27, if_dist_adelante_lejos_and_dist_izq_cerca, then_vel_adelante);  
-    fuzzy->addFuzzyRule(fuzzyRule027); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 28 "IF adelante = lejos and izquierda = perfecto THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule028 = new FuzzyRule(28, if_dist_adelante_lejos_and_dist_izq_perfecto, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule028); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 29 "IF adelante = lejos and izquierda = lejos THEN vel = adelante"
-    FuzzyRule* fuzzyRule029 = new FuzzyRule(29, if_dist_adelante_lejos_and_dist_izq_lejos, then_vel_atras);  
-    fuzzy->addFuzzyRule(fuzzyRule029); // Agrega regla difusa al objeto difuso.
-
-    // FuzzyRule 30 "IF adelante = lejos and izquierda = muy lejos THEN vel = adelante rapido"
-    FuzzyRule* fuzzyRule030 = new FuzzyRule(30, if_dist_adelante_lejos_and_dist_izq_muy_lejos, then_vel_adelante_rapido);  
-    fuzzy->addFuzzyRule(fuzzyRule030); // Agrega regla difusa al objeto difuso.
   }
 
+  void girar_izq(int rueda_izq, int rueda_der){
+    // Serial.print("Izquierda: ");
+    // Serial.print(rueda_izq);
+    // Serial.print(", Derecha: ");
+    // Serial.println(rueda_der);
 
-    Serial.println("Setup hecho.");
-  }
-
-  void girar_izq(){
+    analogWrite(VEL_IZQ,0);
+    analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, LOW);
     digitalWrite(RI_ATRAS, HIGH);
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, HIGH);
     // Serial.println("Gira izq");
-    analogWrite(VELOCIDAD,130);
+    analogWrite(VEL_IZQ,rueda_izq);
+    analogWrite(VEL_DER,rueda_der);
   }
 
-  void girar_der(){
-    analogWrite(VELOCIDAD,0);
+  void girar_der(int rueda_izq, int rueda_der){
+    // Serial.print("Izquierda: ");
+    // Serial.print(rueda_izq);
+    // Serial.print(", Derecha: ");
+    // Serial.println(rueda_der);
+
+    analogWrite(VEL_IZQ,0);
+    analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, HIGH);
     digitalWrite(RI_ATRAS, LOW);
     digitalWrite(RD_ATRAS, HIGH);
     digitalWrite(RD_ADELANTE, LOW);
     // Serial.println("gira derecha");
-    analogWrite(VELOCIDAD,130);
+    analogWrite(VEL_IZQ,rueda_izq);
+    analogWrite(VEL_DER,rueda_der);
   }
 
-  void corregir_izq(){
-    analogWrite(VELOCIDAD,0);
+  void corregir_izq(int rueda_izq, int rueda_der){
+    // Serial.print("Izquierda: ");
+    // Serial.print(rueda_izq);
+    // Serial.print(", Derecha: ");
+    // Serial.println(rueda_der);
+
+    analogWrite(VEL_IZQ,0);
+    analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, LOW);
     digitalWrite(RI_ATRAS, LOW);
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, HIGH);
     // Serial.println("corrige izq");
-    analogWrite(VELOCIDAD,130);
+    analogWrite(VEL_IZQ,rueda_izq);
+    analogWrite(VEL_DER,rueda_der);
   }
 
-  void corregir_der(){
-    analogWrite(VELOCIDAD,0);
+  void corregir_der(int rueda_izq, int rueda_der){
+    // Serial.print("Izquierda: ");
+    // Serial.print(rueda_izq);
+    // Serial.print(", Derecha: ");
+    // Serial.println(rueda_der);
+
+    analogWrite(VEL_IZQ,0);
+    analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, HIGH);
     digitalWrite(RI_ATRAS, LOW);
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, LOW);
     // Serial.println("corrige derecha");
-    analogWrite(VELOCIDAD,130);
-     
+    analogWrite(VEL_IZQ,rueda_izq);
+    analogWrite(VEL_DER,rueda_der);
+
   }
 
-  void mover_adelante(){
-    analogWrite(VELOCIDAD,0);
+  void mover_adelante(int rueda_izq, int rueda_der){
+    // Serial.print("Izquierda: ");
+    // Serial.print(rueda_izq);
+    // Serial.print(", Derecha: ");
+    // Serial.println(rueda_der);
+
+    analogWrite(VEL_IZQ,0);
+    analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, HIGH);
     digitalWrite(RI_ATRAS, LOW);
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, HIGH);
     // Serial.println("adelante");
-    analogWrite(VELOCIDAD,130);
+    analogWrite(VEL_IZQ,rueda_izq);
+    analogWrite(VEL_DER,rueda_der);
   }
 
-  void mover_atras(){
-    analogWrite(VELOCIDAD,0);
+  void mover_atras(int rueda_izq, int rueda_der){
+    // Serial.print("Izquierda: ");
+    // Serial.print(rueda_izq);
+    // Serial.print(", Derecha: ");
+    // Serial.println(rueda_der);
 
+    analogWrite(VEL_IZQ,0);
+    analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, LOW);
     digitalWrite(RI_ATRAS, HIGH);
     digitalWrite(RD_ATRAS, HIGH);
     digitalWrite(RD_ADELANTE, LOW);
     // Serial.println("atras");
-    analogWrite(VELOCIDAD,130);
+    analogWrite(VEL_IZQ,rueda_izq);
+    analogWrite(VEL_DER,rueda_der);
   }  
 
-  bool hay_obstaculo(int trig, int echo){
-    long distancia;
-    long tiempo;
-
-    digitalWrite(trig,LOW); /* Por cuestión de estabilización del sensor*/
-    delayMicroseconds(2);
-    digitalWrite(trig, HIGH); /* envío del pulso ultrasónico*/
-    delayMicroseconds(10);
-    digitalWrite(trig,LOW);
-      
-    /* Función para medir la longitud del pulso entrante. Mide el tiempo que transcurrido entre el envío del pulso ultrasónico y cuando el sensor recibe el rebote*/
-    tiempo=pulseIn(echo, HIGH); 
-      
-    /*fórmula para calcular la distancia obteniendo un valor entero*/
-    distancia= int((tiempo/2)/29); 
-      
-    // Serial.print("Distancia ");
-    // Serial.print(distancia);
-    // Serial.print(" cm - Pin echo: ");
-    // Serial.println(echo);
-
-    if(distancia<6){
-      // Serial.println("muy cerca");
-      corregir_der();
-      return true;
-    }
-    else{
-      if(distancia>=6 and distancia<=8){
-        // Serial.println("Ok");
-        return true;
-      }
-      else{
-        if(distancia>8 and distancia<=10){
-          // Serial.println("Lejos");
-          corregir_izq();
-          return true;
-        }
-        else{
-          return false;
-        }
-      }
-    }
-  }
-
- void detectar_posicion_inicial(){
-    if(hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO) == true and hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO) == true){
-      // Serial.println("Guarda pos inicial");
-      tiene_posicion_inicial = true;
-      busca_contorno = true;
-      }else{
-        if(hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO) == true){
-          girar_der();
-        }
-        else{          
-          mover_adelante();
-        }
-      }
-    }
-
-  void recorrer_contorno(){
-
-    if(hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO) == true and hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO) == true){
-      encontro_pared = false;
-      Serial.println("adelante true - izq true");
-      girar_der();
-    }
-
-    if(hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO) == true and hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO) == false){
-      Serial.println("adelante true - izq false");
-      girar_der();
-    }
-    else{
-      if(hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO) == false and encontro_pared == true){
-        Serial.println("izq false - pared true");
-        mover_adelante();
-        girar_izq();
-        mover_adelante();
-      }
-    }
-
-    if(hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO) == false and hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO) == true){
-      Serial.println("adelante false - izq true");
-      encontro_pared = true;
-      mover_adelante();
-    }
-
-    if(hay_obstaculo(US_ADELANTE_TRIG, US_ADELANTE_ECHO) == false and hay_obstaculo(US_IZQ_TRIG, US_IZQ_ECHO) == false){
-      Serial.println("adelante false - izq false");
-      mover_adelante();
-    }
-  }
-
-  int hay_obstaculo2(int trig, int echo){
-    long distancia;
+  int medir(int trig, int echo){
+    int distancia;
     long tiempo;
 
     digitalWrite(trig,LOW); /* Por cuestión de estabilización del sensor*/
@@ -461,25 +375,124 @@ class CortadoraClass{
     /*fórmula para calcular la distancia obteniendo un valor entero*/
 
     return distancia = int((tiempo/2)/29); 
-      
+
     // Serial.print("Distancia ");
     // Serial.print(distancia);
     // Serial.print(" cm - Pin echo: ");
     // Serial.println(echo);
   }
 
-  void reglas(){
+  void fusificar(int medida_adelante, int medida_izq, char accion){
+    fuzzy->setInput(1, medida_adelante); //input sensor delantero
+    fuzzy->setInput(2, medida_izq); //input sensor izquierdo
 
-    fuzzy->setInput(1, hay_obstaculo2(US_ADELANTE_TRIG, US_ADELANTE_ECHO)); //Agrega variable de entrada dist al objeto difuso
-    fuzzy->setInput(2, hay_obstaculo2(US_IZQ_TRIG, US_IZQ_ECHO));  //Agrega variable de entrada dist al objeto difuso
+    fuzzy->fuzzify();
     
-    float a, b, c, d, e;
-    a= atras_rapido ->getPertinence();
-    b= atras ->getPertinence();
-    c= detener ->getPertinence();
-    d= adelante ->getPertinence();
-    e= adelante_rapido ->getPertinence();
-    fuzzy->fuzzify(); // Fuzificación
+    float rueda_izq = fuzzy->defuzzify(1); //salida rueda izquierda
+    float rueda_der = fuzzy->defuzzify(2); //salida rueda derecha
 
+    Serial.print("Adelante Distancia: ");
+    Serial.print(medida_adelante);
+    Serial.print(", ");
+    Serial.print(adelante_cerca->getPertinence());
+    Serial.print(", ");
+    Serial.print(adelante_bien->getPertinence());
+    Serial.print(", ");
+    Serial.println(adelante_lejos->getPertinence());
     
+    Serial.print("Izquierda Distancia: ");
+    Serial.print(medida_izq);
+    Serial.print(", ");
+    Serial.print(izq_muy_cerca->getPertinence());
+    Serial.print(", ");
+    Serial.print(izq_cerca->getPertinence());
+    Serial.print(", ");
+    Serial.print(izq_perfecto->getPertinence());
+    Serial.print(", ");
+    Serial.println(izq_lejos->getPertinence());
+    Serial.print(", ");
+    Serial.println(izq_muy_lejos->getPertinence());
+
+    Serial.print("Velocidad izquierda: ");
+    Serial.print(rueda_izq);
+    Serial.print(", derecha: ");
+    Serial.println(rueda_der);
+    Serial.println("\n");
+
+    switch (accion) {
+      case 'girar_der':
+        girar_der(rueda_izq, rueda_der);
+        break;
+      case 'mover_adelante':
+        mover_adelante(rueda_izq, rueda_der);
+        break;
+      case 'girar_izq':
+        girar_izq(rueda_izq, rueda_der);
+        break;
+      case 'corregir_der':
+        corregir_der(rueda_izq, rueda_der);
+        break;
+      case 'corregir_izq':
+        corregir_izq(rueda_izq, rueda_der);
+        break;
+      case 'mover_atras':
+        mover_atras(rueda_izq, rueda_der);
+        break;
+    }
+  }
+
+  void detectar_posicion_inicial(){
+    int medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
+    int medida_izq = medir(US_IZQ_TRIG, US_IZQ_ECHO);
+
+    if(medida_adelante >= 6 and  medida_izq >= 6){
+      fusificar(medida_adelante, medida_izq, 'mover_adelante');
+    }
+    else{
+      if(medida_izq >= 6){
+        fusificar(medida_adelante, medida_izq, 'girar_der');
+      }
+      else{
+        Serial.println("Guarda pos inicial");
+        tiene_posicion_inicial = true;
+        busca_contorno = true;
+      }
+    }
+  }
+
+  void recorrer_contorno(){
+    int medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
+    int medida_izq = medir(US_IZQ_TRIG, US_IZQ_ECHO);
+
+    if(medida_adelante <= 12){
+      fusificar(medida_adelante, medida_izq, 'girar_der');      
+    }
+    else{
+      if(medida_izq <= 8){
+        encontro_pared = true;
+        fusificar(medida_adelante, medida_izq, 'corregir_der');        
+      }
+      else{
+        if(medida_izq <= 10){
+          encontro_pared = true;
+          fusificar(medida_adelante, medida_izq, 'mover_adelante');          
+        }
+        else{
+          if(medida_izq <= 14){
+            encontro_pared = true;
+            fusificar(medida_adelante, medida_izq, 'corregir_izq');            
+          }
+          else{
+            if(encontro_pared == true){
+              fusificar(medida_adelante, medida_izq, 'girar_izq');
+              encontro_pared = false;              
+            }
+            else{
+              fusificar(medida_adelante, medida_izq, 'mover_adelante');              
+            }
+          }
+        }
+      }
+    }
+  }
 };
