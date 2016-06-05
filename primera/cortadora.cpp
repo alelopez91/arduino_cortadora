@@ -259,10 +259,10 @@ class CortadoraClass{
   }
 
   void girar_izq(int rueda_izq, int rueda_der){
-    // Serial.print("Izquierda: ");
-    // Serial.print(rueda_izq);
-    // Serial.print(", Derecha: ");
-    // Serial.println(rueda_der);
+    Serial.print("Izquierda: ");
+    Serial.print(rueda_izq);
+    Serial.print(", Derecha: ");
+    Serial.println(rueda_der);
 
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
@@ -276,10 +276,10 @@ class CortadoraClass{
   }
 
   void girar_der(int rueda_izq, int rueda_der){
-    // Serial.print("Izquierda: ");
-    // Serial.print(rueda_izq);
-    // Serial.print(", Derecha: ");
-    // Serial.println(rueda_der);
+    Serial.print("Izquierda: ");
+    Serial.print(rueda_izq);
+    Serial.print(", Derecha: ");
+    Serial.println(rueda_der);
 
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
@@ -328,10 +328,10 @@ class CortadoraClass{
   }
 
   void mover_adelante(int rueda_izq, int rueda_der){
-    // Serial.print("Izquierda: ");
-    // Serial.print(rueda_izq);
-    // Serial.print(", Derecha: ");
-    // Serial.println(rueda_der);
+    Serial.print("Izquierda: ");
+    Serial.print(rueda_izq);
+    Serial.print(", Derecha: ");
+    Serial.println(rueda_der);
 
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
@@ -380,9 +380,14 @@ class CortadoraClass{
     // Serial.print(distancia);
     // Serial.print(" cm - Pin echo: ");
     // Serial.println(echo);
+    // Serial.println("\n");
   }
 
-  void fusificar(int medida_adelante, int medida_izq, char accion){
+  void fusificar(int medida_adelante, int medida_izq, int accion){
+    Serial.println("Fusificar");
+    Serial.print("Accion: ");
+    Serial.println(accion);
+    Serial.println("\n");
     fuzzy->setInput(1, medida_adelante); //input sensor delantero
     fuzzy->setInput(2, medida_izq); //input sensor izquierdo
 
@@ -393,49 +398,55 @@ class CortadoraClass{
 
     Serial.print("Adelante Distancia: ");
     Serial.print(medida_adelante);
-    Serial.print(", ");
-    Serial.print(adelante_cerca->getPertinence());
-    Serial.print(", ");
-    Serial.print(adelante_bien->getPertinence());
-    Serial.print(", ");
-    Serial.println(adelante_lejos->getPertinence());
+    // Serial.print(", ");
+    // Serial.print(adelante_cerca->getPertinence());
+    // Serial.print(", ");
+    // Serial.print(adelante_bien->getPertinence());
+    // Serial.print(", ");
+    // Serial.println(adelante_lejos->getPertinence());
     
     Serial.print("Izquierda Distancia: ");
     Serial.print(medida_izq);
-    Serial.print(", ");
-    Serial.print(izq_muy_cerca->getPertinence());
-    Serial.print(", ");
-    Serial.print(izq_cerca->getPertinence());
-    Serial.print(", ");
-    Serial.print(izq_perfecto->getPertinence());
-    Serial.print(", ");
-    Serial.println(izq_lejos->getPertinence());
-    Serial.print(", ");
-    Serial.println(izq_muy_lejos->getPertinence());
+    // Serial.print(", ");
+    // Serial.print(izq_muy_cerca->getPertinence());
+    // Serial.print(", ");
+    // Serial.print(izq_cerca->getPertinence());
+    // Serial.print(", ");
+    // Serial.print(izq_perfecto->getPertinence());
+    // Serial.print(", ");
+    // Serial.println(izq_lejos->getPertinence());
+    // Serial.print(", ");
+    // Serial.println(izq_muy_lejos->getPertinence());
 
-    Serial.print("Velocidad izquierda: ");
-    Serial.print(rueda_izq);
-    Serial.print(", derecha: ");
-    Serial.println(rueda_der);
-    Serial.println("\n");
+    // Serial.print("Velocidad izquierda: ");
+    // Serial.print(rueda_izq);
+    // Serial.print(", derecha: ");
+    // Serial.println(rueda_der);
+    // Serial.println("\n");
 
     switch (accion) {
-      case 'girar_der':
+      case 1:
+        Serial.println("girar_der");
         girar_der(rueda_izq, rueda_der);
         break;
-      case 'mover_adelante':
-        mover_adelante(rueda_izq, rueda_der);
-        break;
-      case 'girar_izq':
+      case 2:
+        Serial.println("girar_izq");
         girar_izq(rueda_izq, rueda_der);
         break;
-      case 'corregir_der':
+      case 3:
+        Serial.println("mover_adelante");
+        mover_adelante(rueda_izq, rueda_der);
+        break;
+      case 4:
+        Serial.println("corregir_der");
         corregir_der(rueda_izq, rueda_der);
         break;
-      case 'corregir_izq':
+      case 5:
+        Serial.println("corregir_izq");
         corregir_izq(rueda_izq, rueda_der);
         break;
-      case 'mover_atras':
+      case 6:
+        Serial.println("mover_atras");
         mover_atras(rueda_izq, rueda_der);
         break;
     }
@@ -445,17 +456,20 @@ class CortadoraClass{
     int medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
     int medida_izq = medir(US_IZQ_TRIG, US_IZQ_ECHO);
 
-    if(medida_adelante >= 6 and  medida_izq >= 6){
-      fusificar(medida_adelante, medida_izq, 'mover_adelante');
+    if(medida_adelante <= 12 and  medida_izq <= 14){
+      Serial.println("Guarda pos inicial");
+      tiene_posicion_inicial = true;
+      busca_contorno = true;
     }
     else{
-      if(medida_izq >= 6){
-        fusificar(medida_adelante, medida_izq, 'girar_der');
+      if(medida_izq <= 14){
+        fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'
       }
-      else{
-        Serial.println("Guarda pos inicial");
-        tiene_posicion_inicial = true;
-        busca_contorno = true;
+      if(medida_adelante <= 12){
+        fusificar(medida_adelante, medida_izq, 1); //girar_der()
+      }
+      if(medida_adelante > 12 and  medida_izq > 14){
+        fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'
       }
     }
   }
@@ -465,30 +479,30 @@ class CortadoraClass{
     int medida_izq = medir(US_IZQ_TRIG, US_IZQ_ECHO);
 
     if(medida_adelante <= 12){
-      fusificar(medida_adelante, medida_izq, 'girar_der');      
+      fusificar(medida_adelante, medida_izq, 1); //'girar_der'
     }
     else{
       if(medida_izq <= 8){
         encontro_pared = true;
-        fusificar(medida_adelante, medida_izq, 'corregir_der');        
+        fusificar(medida_adelante, medida_izq, 4);//'corregir_der'
       }
       else{
         if(medida_izq <= 10){
           encontro_pared = true;
-          fusificar(medida_adelante, medida_izq, 'mover_adelante');          
+          fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'          
         }
         else{
           if(medida_izq <= 14){
             encontro_pared = true;
-            fusificar(medida_adelante, medida_izq, 'corregir_izq');            
+            fusificar(medida_adelante, medida_izq, 5);//'corregir_izq'
           }
           else{
             if(encontro_pared == true){
-              fusificar(medida_adelante, medida_izq, 'girar_izq');
+              fusificar(medida_adelante, medida_izq, 2);//'girar_izq'
               encontro_pared = false;              
             }
             else{
-              fusificar(medida_adelante, medida_izq, 'mover_adelante');              
+              fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'              
             }
           }
         }
