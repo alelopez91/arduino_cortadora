@@ -35,27 +35,27 @@ class CortadoraClass{
     //Conjuntos difusos de entrada para los ultrasonidos
 
     //Ultrasonido delantero:
-    FuzzySet* adelante_cerca = new FuzzySet(0, 0, 3, 7);        //Conjunto difuso Distancia cerca
-    FuzzySet* adelante_bien  = new FuzzySet(5, 8, 8, 11);       //Conjunto difuso Distancia deseada
-    FuzzySet* adelante_lejos = new FuzzySet(10, 15, 150, 150);    //Conjunto difuso Distancia lejos
+    FuzzySet* adelante_cerca = new FuzzySet(0, 0, 7, 10);        //Conjunto difuso Distancia cerca
+    FuzzySet* adelante_bien  = new FuzzySet(8, 11, 11, 14);       //Conjunto difuso Distancia deseada
+    FuzzySet* adelante_lejos = new FuzzySet(12, 15, 250, 250);    //Conjunto difuso Distancia lejos
     //Ultrasonido izquierdo:
-    FuzzySet* izq_muy_cerca = new FuzzySet(0, 0, 2, 5);         //Conjunto difuso Distancia demasiado cerca
-    FuzzySet* izq_cerca     = new FuzzySet(3, 6, 6, 8);         //Conjunto difuso Distancia cerca
-    FuzzySet* izq_perfecto  = new FuzzySet(7, 9, 9, 11);        //Conjunto difuso Distancia deseada
-    FuzzySet* izq_lejos     = new FuzzySet(10, 12, 12, 15);     //Conjunto difuso Distancia lejos
-    FuzzySet* izq_muy_lejos = new FuzzySet(13, 15, 150, 150);     //Conjunto difuso Distancia demasiado lejos
+    FuzzySet* izq_muy_cerca  = new FuzzySet(0, 0, 2, 5);         //Conjunto difuso Distancia demasiado cerca
+    FuzzySet* izq_cerca      = new FuzzySet(3, 6, 6, 8);         //Conjunto difuso Distancia cerca
+    FuzzySet* izq_perfecto   = new FuzzySet(7, 9, 9, 11);        //Conjunto difuso Distancia deseada
+    FuzzySet* izq_lejos      = new FuzzySet(10, 12, 12, 15);     //Conjunto difuso Distancia lejos
+    FuzzySet* izq_muy_lejos  = new FuzzySet(13, 15, 250, 250);     //Conjunto difuso Distancia demasiado lejos
 
     //Conjuntos difusos de salida para la velocidad de los motores
 
     //Velocidad de motor izquierdo:
-    FuzzySet* izq_detener         = new FuzzySet(0, 0, 0, 0);             // Velocidad para detener     
-    FuzzySet* izq_adelante        = new FuzzySet(0,60,60, 120);           // Velocidad hacia adelante
-    FuzzySet* izq_adelante_rapido = new FuzzySet(100, 140, 200, 200);     // Velocidad hacia adelante rapida
+    FuzzySet* izq_detener    = new FuzzySet(0, 0, 0, 10);             // Velocidad para detener     
+    FuzzySet* izq_vel_suave  = new FuzzySet(0,60,60, 120);           // Velocidad hacia adelante
+    FuzzySet* izq_vel_rapida = new FuzzySet(100, 140, 200, 200);     // Velocidad hacia adelante rapida
 
     //Velocidad de motor derecho:
-    FuzzySet* der_detener         = new FuzzySet(0, 0, 0, 0);             // Velocidad para detener     
-    FuzzySet* der_adelante        = new FuzzySet(0,60,60, 120);           // Velocidad hacia adelante
-    FuzzySet* der_adelante_rapido = new FuzzySet(100, 140, 200, 200);     // Velocidad hacia adelante rapida
+    FuzzySet* der_detener    = new FuzzySet(0, 0, 0, 10);             // Velocidad para detener     
+    FuzzySet* der_vel_suave  = new FuzzySet(0,60,60, 120);           // Velocidad hacia adelante
+    FuzzySet* der_vel_rapida = new FuzzySet(100, 140, 200, 200);     // Velocidad hacia adelante rapida
     
     public:
     bool tiene_posicion_inicial;
@@ -127,15 +127,15 @@ class CortadoraClass{
     //Asignar las fciones de pertenencia de salida rueda izquierda
     FuzzyOutput* izq = new FuzzyOutput(1);
     izq->addFuzzySet(izq_detener);            // Agregar fuzzyset detener
-    izq->addFuzzySet(izq_adelante);           // Agregar fuzzyset adelante
-    izq->addFuzzySet(izq_adelante_rapido);    // Agregar fuzzyset adelante rapido     
+    izq->addFuzzySet(izq_vel_suave);           // Agregar fuzzyset adelante
+    izq->addFuzzySet(izq_vel_rapida);    // Agregar fuzzyset adelante rapido     
     fuzzy->addFuzzyOutput(izq);           // Agrega entrada difusa al objeto difuso
 
     //Asignar las fciones de pertenencia de salida rueda derecha
     FuzzyOutput* der = new FuzzyOutput(2);
     der->addFuzzySet(der_detener);            // Agregar fuzzyset detener
-    der->addFuzzySet(der_adelante);           // Agregar fuzzyset adelante
-    der->addFuzzySet(der_adelante_rapido);    // Agregar fuzzyset adelante rapido     
+    der->addFuzzySet(der_vel_suave);           // Agregar fuzzyset adelante
+    der->addFuzzySet(der_vel_rapida);    // Agregar fuzzyset adelante rapido     
     fuzzy->addFuzzyOutput(der);           // Agrega entrada difusa al objeto difuso
     
     //Declaracion de antecedentes
@@ -188,16 +188,16 @@ class CortadoraClass{
     //Declaracion de consecuentes
 
     FuzzyRuleConsequent* then_vel_izq_adelante_and_der_adelante = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
-    then_vel_izq_adelante_and_der_adelante->addOutput(izq_adelante);                                    // Agregando FuzzySet correspondiente a la consecuencia
-    then_vel_izq_adelante_and_der_adelante->addOutput(der_adelante);                                    // Agregando FuzzySet correspondiente a la consecuencia
+    then_vel_izq_adelante_and_der_adelante->addOutput(izq_vel_suave);                                    // Agregando FuzzySet correspondiente a la consecuencia
+    then_vel_izq_adelante_and_der_adelante->addOutput(der_vel_suave);                                    // Agregando FuzzySet correspondiente a la consecuencia
     
     FuzzyRuleConsequent* then_vel_izq_adelante_rapido_and_der_detener = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
-    then_vel_izq_adelante_rapido_and_der_detener->addOutput(izq_adelante_rapido);                                          // Agregando FuzzySet correspondiente a la consecuencia
+    then_vel_izq_adelante_rapido_and_der_detener->addOutput(izq_vel_rapida);                                          // Agregando FuzzySet correspondiente a la consecuencia
     then_vel_izq_adelante_rapido_and_der_detener->addOutput(der_detener);                                          // Agregando FuzzySet correspondiente a la consecuencia
     
     FuzzyRuleConsequent* then_vel_izq_adelante_rapido_and_der_adelante_rapido = new FuzzyRuleConsequent(); // Inicializando consecuencia de la expresión
-    then_vel_izq_adelante_rapido_and_der_adelante_rapido->addOutput(izq_adelante_rapido);                      // Agregando FuzzySet correspondiente a la consecuencia
-    then_vel_izq_adelante_rapido_and_der_adelante_rapido->addOutput(der_adelante_rapido);
+    then_vel_izq_adelante_rapido_and_der_adelante_rapido->addOutput(izq_vel_rapida);                      // Agregando FuzzySet correspondiente a la consecuencia
+    then_vel_izq_adelante_rapido_and_der_adelante_rapido->addOutput(der_vel_rapida);
 
 
     //Reglas del motor rueda izquierda
@@ -274,14 +274,14 @@ class CortadoraClass{
     analogWrite(VEL_IZQ,izq);
     analogWrite(VEL_DER,der);
 
-    Serial.print("Izquierda: ");
-    Serial.print(izq);
-    Serial.print(", Derecha: ");
-    Serial.println(der);
+    // Serial.print("Izquierda: ");
+    // Serial.print(izq);
+    // Serial.print(", Derecha: ");
+    // Serial.println(der);
   }
 
   void girar_der(int izq, int der){
-    Serial.println("gira derecha");
+    // Serial.println("gira derecha");
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, HIGH);
@@ -291,15 +291,15 @@ class CortadoraClass{
     analogWrite(VEL_IZQ,izq);
     analogWrite(VEL_DER,der);
     
-    Serial.print("Izquierda: ");
-    Serial.print(izq);
-    Serial.print(", Derecha: ");
-    Serial.println(der);
+    // Serial.print("Izquierda: ");
+    // Serial.print(izq);
+    // Serial.print(", Derecha: ");
+    // Serial.println(der);
 
   }
 
   void mover_adelante(int izq, int der){
-    Serial.println("adelante");
+    //Serial.println("adela");
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, HIGH);
@@ -309,10 +309,10 @@ class CortadoraClass{
     analogWrite(VEL_IZQ,izq);
     analogWrite(VEL_DER,der);
 
-    Serial.print("Izquierda: ");
-    Serial.print(izq);
-    Serial.print(", Derecha: ");
-    Serial.println(der);
+    // Serial.print("Izquierda: ");
+    // Serial.print(izq);
+    // Serial.print(", Derecha: ");
+    // Serial.println(der);
     
 
   }
@@ -379,7 +379,7 @@ class CortadoraClass{
     delayMicroseconds(2);
     digitalWrite(trig, HIGH); /* envío del pulso ultrasónico*/
     delayMicroseconds(10);
-    digitalWrite(trig,LOW);      
+    // digitalWrite(trig,LOW);      
     /* Función para medir la longitud del pulso entrante. Mide el tiempo que transcurrido entre el envío del pulso ultrasónico y cuando el sensor recibe el rebote*/
     tiempo=pulseIn(echo, HIGH);       
     /*fórmula para calcular la distancia obteniendo un valor entero*/
@@ -395,10 +395,10 @@ class CortadoraClass{
   }
 
   void fusificar(int adelante, int izq, int accion){
-    Serial.println("Fusificar");
-    Serial.print("Accion: ");
-    Serial.print(accion);
-    Serial.println("\n");
+    // Serial.println("Fusificar");
+    // Serial.print("Accion: ");
+    // Serial.print(accion);
+    // Serial.println("\n");
     fuzzy->setInput(1, adelante); //input sensor delantero
     fuzzy->setInput(2, izq); //input sensor izquierdo
 
@@ -407,8 +407,8 @@ class CortadoraClass{
     float rueda_izq = float(fuzzy->defuzzify(1)); //salida rueda izquierda
     float rueda_der = float(fuzzy->defuzzify(2)); //salida rueda derecha
 
-    Serial.print("Adelante Distancia: ");
-    Serial.println(adelante);
+    // Serial.print("Adelante Distancia: ");
+    // Serial.println(adelante);
     // Serial.print(", ");
     // Serial.print(adelante_cerca->getPertinence());
     // Serial.print(", ");
@@ -416,8 +416,8 @@ class CortadoraClass{
     // Serial.print(", ");
     // Serial.println(adelante_lejos->getPertinence());
     
-    Serial.print("Izquierda Distancia: ");
-    Serial.println(izq);
+    // Serial.print("Izquierda Distancia: ");
+    // Serial.println(izq);
     // Serial.print(", ");
     // Serial.print(izq_muy_cerca->getPertinence());
     // Serial.print(", ");
@@ -429,116 +429,117 @@ class CortadoraClass{
     // Serial.print(", ");
     // Serial.println(izq_muy_lejos->getPertinence());
 
-    Serial.print("Velocidad izquierda: ");
-    Serial.print(rueda_izq);
-    Serial.print(", derecha: ");
-    Serial.println(rueda_der);
-    Serial.println("\n");
+    // Serial.print("Velocidad izquierda: ");
+    // Serial.print(rueda_izq);
+    // Serial.print(", derecha: ");
+    // Serial.println(rueda_der);
+    // Serial.println("\n");
 
     switch (accion) {
       case 3:
-        Serial.println("mover_adelante");
-        mover_adelante(rueda_izq, rueda_der);
+        // Serial.println("mover_adelante");
+        mover_adelante(rueda_der, rueda_der);
         break;
       case 1:
-        Serial.println("girar_der");
+        // Serial.println("girar_der");
         girar_der(rueda_izq, rueda_der);
         break;
       case 2:
-        Serial.println("girar_izq");
+        // Serial.println("girar_izq");
         girar_izq(rueda_izq, rueda_der);
         break;
       case 4:
-        Serial.println("corregir_der");
+        // Serial.println("corregir_der");
         corregir_der(rueda_izq, rueda_der);
         break;
       case 5:
-        Serial.println("corregir_izq");
+        // Serial.println("corregir_izq");
         corregir_izq(rueda_izq, rueda_der);
         break;
       case 6:
-        Serial.println("mover_atras");
+        // Serial.println("mover_atras");
         mover_atras(rueda_izq, rueda_der);
         break;
     }
   }
 
   void buscar_pared(){
+    // Serial.println("Buscar Pared");
     medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
-    if(medida_adelante > 12){
+    if(medida_adelante > 15){
       fusificar(medida_adelante, 15, 3);//'mover_adelante'
       delay(500);
     }
     else{
       pared_adelante = true;
-      Serial.println("Pared encontrada");      
+      // Serial.println("Pared encontrada");
+      delay(1500);
     }
   }
 
   void detectar_posicion_inicial(){
+    // Serial.println("Detectar posicion inicial");
     medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
     medida_izq = medir(US_IZQ_TRIG, US_IZQ_ECHO);
 
-    if(medida_adelante <= 12 and  medida_izq <= 14){
-      Serial.println("Guarda pos inicial");
+    if(medida_adelante <= 15 and  medida_izq <= 14){
+      // Serial.println("Guarda pos inicial");
       tiene_posicion_inicial = true;
       busca_contorno = true;
       delay(500);
     }
-    
-    if(medida_adelante > 12 and medida_izq <= 14){
-      fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'
-      delay(500);
-    }
+    else{
+      if(medida_izq <= 14){
+        fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'
+        delay(500);
+      }
 
-    if(medida_adelante <= 12 and  medida_izq > 14){
-      fusificar(medida_adelante, medida_izq, 1); //girar_der()
-      delay(500);
-    }
+      if(medida_adelante <= 15){
+        fusificar(medida_adelante, medida_izq, 1); //girar_der()
+        delay(500);
+      }
 
-    if(medida_adelante > 12 and  medida_izq > 14){
-      fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'
-      delay(500);
-    }
-    
+      if(medida_adelante > 15 and  medida_izq > 14){
+        fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'
+        delay(500);
+      }
+    }    
   }
 
   void recorrer_contorno(){
+    // Serial.println("Recorrer contorno");
     medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
     medida_izq = medir(US_IZQ_TRIG, US_IZQ_ECHO);
 
-    if(medida_adelante <= 12){
+    if(medida_adelante <= 15){
       fusificar(medida_adelante, medida_izq, 1); //'girar_der'
-      delay(500);
     }
-    
-    if(medida_adelante > 12 and medida_izq <= 8){
-      encontro_pared = true;
-      fusificar(medida_adelante, medida_izq, 4);//'corregir_der'
-      delay(500);
-    }
-    
-    if(medida_adelante > 12 and medida_izq <= 10){
-      encontro_pared = true;
-      fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'
-      delay(500);
-    }
-    
-    if(medida_adelante > 12 and medida_izq <= 14){
-      encontro_pared = true;
-      fusificar(medida_adelante, medida_izq, 5);//'corregir_izq'
-      delay(500);
-    }
-    
-    if(medida_izq > 14 and encontro_pared == true){
-      fusificar(medida_adelante, medida_izq, 2);//'girar_izq'
-      encontro_pared = false;
-      delay(500);
-    }
-
-    if(medida_adelante > 12 and  medida_izq > 14){
-      fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'
-      delay(500);
-    }
+    else{
+      if(medida_izq <= 8){
+        encontro_pared = true;
+        fusificar(medida_adelante, medida_izq, 4);//'corregir_der'
+      }
+      else{
+        if(medida_izq <= 10){
+          encontro_pared = true;
+          fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'          
+        }
+        else{
+          if(medida_izq <= 14){
+            encontro_pared = true;
+            fusificar(medida_adelante, medida_izq, 5);//'corregir_izq'
+          }
+          else{
+            if(encontro_pared == true){
+              fusificar(medida_adelante, medida_izq, 2);//'girar_izq'
+              encontro_pared = false;              
+            }
+            else{
+              fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'              
+            }
+          }
+        }
+      }
+    }    
   }
 };
