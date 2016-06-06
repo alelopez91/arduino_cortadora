@@ -465,10 +465,9 @@ class CortadoraClass{
 
   void buscar_pared(){
     medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
-      Serial.println(medida_adelante);
     if(medida_adelante > 12){
-      mover_adelante(50,50);
-      // fusificar(medida_adelante, 15, 3);//'mover_adelante'
+      fusificar(medida_adelante, 15, 3);//'mover_adelante'
+      delay(500);
     }
     else{
       pared_adelante = true;
