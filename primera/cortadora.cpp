@@ -21,14 +21,15 @@ class CortadoraClass{
     int VEL_IZQ;
     int VEL_DER;
     
-    
-
     // Ultrasonido izquierdo - derecho
     int US_ADELANTE_TRIG;
     int US_ADELANTE_ECHO;
     int US_IZQ_TRIG;
     int US_IZQ_ECHO;
 
+    // Encoders opticos
+
+    // Variables globales
     int medida_adelante;
     int medida_izq;
 
@@ -57,35 +58,48 @@ class CortadoraClass{
     FuzzySet* der_vel_suave  = new FuzzySet(0,60,60, 120);           // Velocidad hacia adelante
     FuzzySet* der_vel_rapida = new FuzzySet(100, 140, 200, 200);     // Velocidad hacia adelante rapida
     
-    public:
+  public:
     bool tiene_posicion_inicial;
     bool busca_contorno;
     bool encontro_pared;
     bool pared_adelante;
+    int ENCODER_DER;
+    int ENCODER_IZQ;
+    int ticks_der;
+    int ticks_izq;
     Fuzzy* fuzzy;
     
 
-    void init(){
-      tiene_posicion_inicial = false;
-      busca_contorno = false;
-      encontro_pared = false;
-      pared_adelante = false;
-      medida_adelante = 0;
-      medida_izq = 0;
-      fuzzy = new Fuzzy();
+  void init(){
 
-      RI_ATRAS = 4;
-      RI_ADELANTE = 2;
-      RD_ADELANTE = 6;
-      RD_ATRAS = 7;
-      US_ADELANTE_ECHO = 8;
-      US_ADELANTE_TRIG = 9;
-      US_IZQ_ECHO = 10;
-      US_IZQ_TRIG = 11;
-      VEL_IZQ = 3;
-      VEL_DER = 5;
+    // Asignacion de pines
+    RI_ATRAS = 8;
+    RI_ADELANTE = 9;
+    RD_ADELANTE = 12;
+    RD_ATRAS = 13;
+    US_ADELANTE_ECHO = 6;
+    US_ADELANTE_TRIG = 7;
+    US_IZQ_ECHO = 4;
+    US_IZQ_TRIG = 5;
+    VEL_IZQ = 10;
+    VEL_DER = 11;
+    ENCODER_IZQ = 2;
+    ENCODER_DER = 3;
 
-    // declaracion de pines dentro de arduino
+    // Iniciacion variables globales publicas
+    tiene_posicion_inicial = false;
+    busca_contorno = false;
+    encontro_pared = false;
+    pared_adelante = false;
+
+    // Iniciacion variables globales privadas
+    medida_adelante = 0;
+    medida_izq = 0;
+    ticks_izq = 0;
+    int ticks_der = 0;
+    fuzzy = new Fuzzy();
+
+    // Comportamiento de pines dentro de arduino
     pinMode(RI_ATRAS,OUTPUT);
     pinMode(RI_ADELANTE,OUTPUT);
     pinMode(RD_ATRAS,OUTPUT);
@@ -96,9 +110,8 @@ class CortadoraClass{
     pinMode(US_IZQ_ECHO, INPUT);
     pinMode(VEL_IZQ,OUTPUT);
     pinMode(VEL_DER,OUTPUT);
-
-    
-    
+    pinMode(ENCODER_DER, INPUT);
+    pinMode(ENCODER_IZQ, INPUT);
 
     //Estados iniciales de pines
     digitalWrite(RI_ATRAS, LOW);
@@ -107,6 +120,13 @@ class CortadoraClass{
     digitalWrite(RD_ADELANTE, LOW);
     digitalWrite(US_ADELANTE_TRIG, LOW);
     digitalWrite(US_IZQ_TRIG, LOW);
+    digitalWrite(ENCODER_DER, LOW);
+    digitalWrite(ENCODER_IZQ, LOW);
+
+    // Funcion de interrupcion
+    // attachInterrupt(digitalPinToInterrupt(ENCODER_IZQ), cuenta_vueltas_izq(), CHANGE);
+    // attachInterrupt(digitalPinToInterrupt(ENCODER_DER), cuenta_vueltas_der, CHANGE);
+
 
     //Asignar las fciones de pertenencia de entrada
     FuzzyInput* dist_adelante = new FuzzyInput(1);
@@ -124,14 +144,14 @@ class CortadoraClass{
     fuzzy->addFuzzyInput(dist_izq);           //Agrega entrada difusa al objeto difuso
 
     
-    //Asignar las fciones de pertenencia de salida rueda izquierda
+    //Asignar las funciones de pertenencia de salida rueda izquierda
     FuzzyOutput* izq = new FuzzyOutput(1);
     izq->addFuzzySet(izq_detener);            // Agregar fuzzyset detener
     izq->addFuzzySet(izq_vel_suave);           // Agregar fuzzyset adelante
     izq->addFuzzySet(izq_vel_rapida);    // Agregar fuzzyset adelante rapido     
     fuzzy->addFuzzyOutput(izq);           // Agrega entrada difusa al objeto difuso
 
-    //Asignar las fciones de pertenencia de salida rueda derecha
+    //Asignar las funciones de pertenencia de salida rueda derecha
     FuzzyOutput* der = new FuzzyOutput(2);
     der->addFuzzySet(der_detener);            // Agregar fuzzyset detener
     der->addFuzzySet(der_vel_suave);           // Agregar fuzzyset adelante
@@ -263,6 +283,15 @@ class CortadoraClass{
 
   }
 
+  void controlar_vuelta_de_rueda(int izq, int der){
+    ticks_der = 0;
+    ticks_izq = 0;
+    while(ticks_der <= 20 and ticks_izq <= 20){
+      analogWrite(VEL_DER,der);
+      analogWrite(VEL_IZQ,izq);
+    }
+  }
+
   void girar_izq(int izq, int der){
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
@@ -270,104 +299,78 @@ class CortadoraClass{
     digitalWrite(RI_ATRAS, HIGH);
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, HIGH);
-    // Serial.println("Gira izq");
-    analogWrite(VEL_IZQ,izq);
-    analogWrite(VEL_DER,der);
 
-    // Serial.print("Izquierda: ");
-    // Serial.print(izq);
-    // Serial.print(", Derecha: ");
-    // Serial.println(der);
+    controlar_vuelta_de_rueda(izq, der);
   }
 
   void girar_der(int izq, int der){
-    // Serial.println("gira derecha");
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, HIGH);
     digitalWrite(RI_ATRAS, LOW);
     digitalWrite(RD_ATRAS, HIGH);
     digitalWrite(RD_ADELANTE, LOW);
-    analogWrite(VEL_IZQ,izq);
-    analogWrite(VEL_DER,der);
     
-    // Serial.print("Izquierda: ");
-    // Serial.print(izq);
-    // Serial.print(", Derecha: ");
-    // Serial.println(der);
-
+    controlar_vuelta_de_rueda(izq, der);
   }
 
   void mover_adelante(int izq, int der){
-    //Serial.println("adela");
+    Serial.print("Adelante");
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, HIGH);
     digitalWrite(RI_ATRAS, LOW);
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, HIGH);
-    analogWrite(VEL_IZQ,izq);
-    analogWrite(VEL_DER,der);
 
-    // Serial.print("Izquierda: ");
-    // Serial.print(izq);
-    // Serial.print(", Derecha: ");
-    // Serial.println(der);
-    
 
+    controlar_vuelta_de_rueda(izq, der);
+  }
+
+  void mover_adelante2(int izq, int der){
+    analogWrite(VEL_IZQ,0);
+    analogWrite(VEL_DER,0);
+    digitalWrite(RI_ADELANTE, HIGH);
+    digitalWrite(RI_ATRAS, LOW);
+    digitalWrite(RD_ATRAS, LOW);
+    digitalWrite(RD_ADELANTE, HIGH);
+
+    controlar_vuelta_de_rueda(izq, der);
   }
 
   void mover_atras(int izq, int der){
-    // Serial.print("Izquierda: ");
-    // Serial.print(izq);
-    // Serial.print(", Derecha: ");
-    // Serial.println(der);
-
+    Serial.print("Atras");
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, LOW);
     digitalWrite(RI_ATRAS, HIGH);
     digitalWrite(RD_ATRAS, HIGH);
     digitalWrite(RD_ADELANTE, LOW);
-    // Serial.println("atras");
-    analogWrite(VEL_IZQ,izq);
-    analogWrite(VEL_DER,der);
+
+    controlar_vuelta_de_rueda(izq, der);
   }
 
   void corregir_izq(int izq, int der){
-    // Serial.print("Izquierda: ");
-    // Serial.print(izq);
-    // Serial.print(", Derecha: ");
-    // Serial.println(der);
-
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, LOW);
     digitalWrite(RI_ATRAS, LOW);
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, HIGH);
-    // Serial.println("corrige izq");
-    analogWrite(VEL_IZQ,izq);
-    analogWrite(VEL_DER,der);
+
+    controlar_vuelta_de_rueda(izq, der);
   }
 
 
   void corregir_der(int izq, int der){
-    // Serial.print("Izquierda: ");
-    // Serial.print(izq);
-    // Serial.print(", Derecha: ");
-    // Serial.println(der);
-
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, HIGH);
     digitalWrite(RI_ATRAS, LOW);
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, LOW);
-    // Serial.println("corrige derecha");
-    analogWrite(VEL_IZQ,izq);
-    analogWrite(VEL_DER,der);
-
+    
+    controlar_vuelta_de_rueda(izq, der);
   }
 
 
@@ -463,6 +466,11 @@ class CortadoraClass{
     }
   }
 
+  void imprimir(){
+    Serial.println("Ticks: "); Serial.print(ticks_der); Serial.print("\n");
+    delay(1000);
+  }
+
   void buscar_pared(){
     // Serial.println("Buscar Pared");
     medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
@@ -482,7 +490,7 @@ class CortadoraClass{
     medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
     medida_izq = medir(US_IZQ_TRIG, US_IZQ_ECHO);
 
-    if(medida_adelante <= 15 and  medida_izq <= 14){
+    if(medida_adelante <= 25 and  medida_izq <= 14){
       // Serial.println("Guarda pos inicial");
       tiene_posicion_inicial = true;
       busca_contorno = true;
