@@ -66,7 +66,7 @@ class CortadoraClass{
     int ENCODER_DER;
     int ENCODER_IZQ;
     volatile int ticks_der;
-    int ticks_izq;
+    volatile int ticks_izq;
     Fuzzy* fuzzy;
     
 
@@ -353,15 +353,15 @@ class CortadoraClass{
     ticks_der = 0;
     ticks_izq = 0;
     Serial.print("Entra al while\n");
-    while(ticks_der <= 1000){
+    while(ticks_izq <= 100){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
     Serial.print("Salio del while");
-    Serial.print("Ticks der: ");
-    Serial.print(ticks_der); Serial.print("\n");
+    Serial.print("Ticks izq: ");
+    Serial.print(ticks_izq); Serial.print("\n");
 
     // delay(3000);
 

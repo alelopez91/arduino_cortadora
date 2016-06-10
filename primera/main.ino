@@ -11,8 +11,8 @@ void setup(){
 
   // pinMode(ENCODER_DER, INPUT);
   // digitalWrite(ENCODER_DER, LOW);
-  attachInterrupt(digitalPinToInterrupt(3), cuenta_vueltas_der, RISING);
-  // attachInterrupt(digitalPinToInterrupt(cortadora.ENCODER_IZQ), cuenta_vueltas_izq, RISING);
+  attachInterrupt(digitalPinToInterrupt(1), cuenta_vueltas_der, RISING);
+  attachInterrupt(digitalPinToInterrupt(0), cuenta_vueltas_izq, RISING);
 
 
 
