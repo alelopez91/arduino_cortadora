@@ -60,13 +60,14 @@ class CortadoraClass{
     
   public:
     bool tiene_posicion_inicial;
-    bool busca_contorno ;
+    bool busca_contorno;
     bool encontro_pared;
     bool pared_adelante;
+    bool bandera;
     int ENCODER_DER;
     int ENCODER_IZQ;
     int ticks_der;
-    int ticks_izq;
+    // int ticks_izq;
     Fuzzy* fuzzy;
     
 
@@ -91,11 +92,12 @@ class CortadoraClass{
     busca_contorno = false;
     encontro_pared = false;
     pared_adelante = false;
+    bandera = false;
 
     // Iniciacion variables globales privadas
     medida_adelante = 0;
     medida_izq = 0;
-    ticks_izq = 0;
+    // ticks_izq = 0;
     ticks_der = 0;
     fuzzy = new Fuzzy();
 
@@ -285,7 +287,7 @@ class CortadoraClass{
 
   void controlar_vuelta_de_rueda(int izq, int der, int vueltas_izq, int vueltas_der){
     ticks_der = 0;
-    ticks_izq = 0;
+    // ticks_izq = 0;
     Serial.print("Entra al while\n");
     while(ticks_der <= vueltas_der){
       analogWrite(VEL_DER,der);
@@ -305,9 +307,9 @@ class CortadoraClass{
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, HIGH);
     ticks_der = 0;
-    ticks_izq = 0;
+    // ticks_izq = 0;
     Serial.print("Entra al while\n");
-    while(ticks_der <= 1000 and ticks_izq <= 1000){
+    while(bandera == false){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }
@@ -328,9 +330,9 @@ class CortadoraClass{
     digitalWrite(RD_ADELANTE, LOW);
     
     ticks_der = 0;
-    ticks_izq = 0;
+    // ticks_izq = 0;
     Serial.print("Entra al while\n");
-    while(ticks_der <= 1000 and ticks_izq <= 1000){
+    while(ticks_der <= 1000){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }
@@ -351,9 +353,9 @@ class CortadoraClass{
     digitalWrite(RD_ADELANTE, HIGH);
 
     ticks_der = 0;
-    ticks_izq = 0;
+    // ticks_izq = 0;
     Serial.print("Entra al while\n");
-    while(ticks_der <= 1000){
+    while(ticks_der <= 100){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }
@@ -379,7 +381,7 @@ class CortadoraClass{
     digitalWrite(RD_ADELANTE, LOW);
 
     ticks_der = 0;
-    ticks_izq = 0;
+    // ticks_izq = 0;
     Serial.print("Entra al while\n");
     while(ticks_der <= 1000){
       analogWrite(VEL_DER,der);
@@ -406,9 +408,9 @@ class CortadoraClass{
     digitalWrite(RD_ADELANTE, HIGH);
 
     ticks_der = 0;
-    ticks_izq = 0;
+    // ticks_izq = 0;
     Serial.print("Entra al while\n");
-    while(ticks_der <= 1000 and ticks_izq <= 1000){
+    while(ticks_der <= 1000){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }
