@@ -120,8 +120,8 @@ class CortadoraClass{
     digitalWrite(RD_ADELANTE, LOW);
     digitalWrite(US_ADELANTE_TRIG, LOW);
     digitalWrite(US_IZQ_TRIG, LOW);
-    digitalWrite(ENCODER_DER, LOW);
-    digitalWrite(ENCODER_IZQ, LOW);
+    //digitalWrite(ENCODER_DER, LOW);
+    //digitalWrite(ENCODER_IZQ, LOW);
 
     // Funcion de interrupcion
     // attachInterrupt(digitalPinToInterrupt(ENCODER_IZQ), cuenta_vueltas_izq(), CHANGE);
@@ -342,29 +342,23 @@ class CortadoraClass{
   }
 
   void mover_adelante(int izq, int der){
-    Serial.print("Adelante\n");
-    analogWrite(VEL_IZQ,0);
-    analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, HIGH);
     digitalWrite(RI_ATRAS, LOW);
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, HIGH);
 
-    ticks_der = 0;
-    ticks_izq = 0;
-    Serial.print("Entra al while\n");
-    while(ticks_izq <= 100){
+    // ticks_der = 0;
+    // ticks_izq = 0;
+    
+    Serial.println(ticks_der);
+    if(ticks_der < 30){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
+    }else{
+      analogWrite(VEL_IZQ,0);
+      analogWrite(VEL_DER,0);
     }
-    analogWrite(VEL_IZQ,0);
-    analogWrite(VEL_DER,0);
-    Serial.print("Salio del while");
-    Serial.print("Ticks izq: ");
-    Serial.print(ticks_izq); Serial.print("\n");
-
     // delay(3000);
-
 
     // controlar_vuelta_de_rueda(izq, der, 1000, 1000);
   }
@@ -444,15 +438,16 @@ class CortadoraClass{
     /* Función para medir la longitud del pulso entrante. Mide el tiempo que transcurrido entre el envío del pulso ultrasónico y cuando el sensor recibe el rebote*/
     tiempo=pulseIn(echo, HIGH);       
     /*fórmula para calcular la distancia obteniendo un valor entero*/
+    distancia = int((tiempo/2)/29);
 
-    return distancia = int((tiempo/2)/29);
-    delay(50); 
+    return distancia;
+    Serial.print("Distancia ");
+    Serial.print(distancia);
+    Serial.print(" cm - Pin echo: ");
+    Serial.println(echo);
+    Serial.println("\n");
 
-    // Serial.print("Distancia ");
-    // Serial.print(distancia);
-    // Serial.print(" cm - Pin echo: ");
-    // Serial.println(echo);
-    // Serial.println("\n");
+    delay(50);
   }
 
   void fusificar(int adelante, int izq, int accion){

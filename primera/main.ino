@@ -1,7 +1,7 @@
 #include "cortadora.cpp"
 
 CortadoraClass cortadora;
-// int ENCODER_DER = 2;
+int ENCODER_DER = 2;
 
 void setup(){
   Serial.begin(9600);
@@ -9,10 +9,10 @@ void setup(){
   cortadora.ticks_der = -2;
   cortadora.ticks_izq = -2;
 
-  // pinMode(ENCODER_DER, INPUT);
-  // digitalWrite(ENCODER_DER, LOW);
-  attachInterrupt(digitalPinToInterrupt(1), cuenta_vueltas_der, RISING);
-  attachInterrupt(digitalPinToInterrupt(0), cuenta_vueltas_izq, RISING);
+  pinMode(ENCODER_DER, INPUT);
+  digitalWrite(ENCODER_DER, LOW);
+  attachInterrupt(0, cuenta_vueltas_der, CHANGE);
+  // attachInterrupt(0, cuenta_vueltas_izq, RISING);
 
 
 
@@ -24,8 +24,10 @@ void setup(){
 }
 
 void loop(){
-  // cortadora.mover_adelante(120, 120);
-  // delay(2000);
+  // Serial.print(digitalRead(cortadora.ENCODER_IZQ));
+  // Serial.println("    ");
+  // cortadora.mover_adelante(50, 0);
+  // delay(3000);
   // cortadora.mover_atras(120, 120);
   // delay(4000);
   // cortadora.girar_der(200, 200);
@@ -46,9 +48,11 @@ void loop(){
   //      }
   //   }    
   // }
-  cortadora.mover_adelante(50,50);
 
   // delay(2000);
+
+  cortadora.mover_adelante(80,80);
+
 };
 
 void cuenta_vueltas_der(){
