@@ -65,7 +65,7 @@ class CortadoraClass{
     bool pared_adelante;
     int ENCODER_DER;
     int ENCODER_IZQ;
-    int ticks_der;
+    volatile int ticks_der;
     int ticks_izq;
     Fuzzy* fuzzy;
     

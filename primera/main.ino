@@ -11,7 +11,7 @@ void setup(){
 
   // pinMode(ENCODER_DER, INPUT);
   // digitalWrite(ENCODER_DER, LOW);
-  attachInterrupt(digitalPinToInterrupt(cortadora.ENCODER_DER), cuenta_vueltas_der, RISING);
+  attachInterrupt(digitalPinToInterrupt(3), cuenta_vueltas_der, RISING);
   // attachInterrupt(digitalPinToInterrupt(cortadora.ENCODER_IZQ), cuenta_vueltas_izq, RISING);
 
 
@@ -33,19 +33,21 @@ void loop(){
   // cortadora.girar_izq(120, 120);
 
 
-  if(cortadora.pared_adelante == false){
-    cortadora.buscar_pared();
-  }
-  else{
-    if(cortadora.tiene_posicion_inicial == false){
-      cortadora.detectar_posicion_inicial();
-    }
-    else{
-      if (cortadora.busca_contorno == true){
-         cortadora.recorrer_contorno();
-       }
-    }    
-  }
+  // if(cortadora.pared_adelante == false){
+  //   cortadora.buscar_pared();
+  // }
+  // else{
+  //   if(cortadora.tiene_posicion_inicial == false){
+  //     cortadora.detectar_posicion_inicial();
+  //   }
+  //   else{
+  //     if (cortadora.busca_contorno == true){
+  //        cortadora.recorrer_contorno();
+  //      }
+  //   }    
+  // }
+  cortadora.mover_adelante(50,50);
+
   // delay(2000);
 };
 
