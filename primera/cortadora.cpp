@@ -346,7 +346,7 @@ class CortadoraClass{
     digitalWrite(RD_ADELANTE, HIGH);
 
     ticks_der = 0;
-    // ticks_izq = 0;
+    ticks_izq = 0;
     
     if(ticks_der < 30){
       analogWrite(VEL_DER,der);
@@ -367,7 +367,7 @@ class CortadoraClass{
     digitalWrite(RD_ADELANTE, LOW);
     
     ticks_der = 0;
-    // ticks_izq = 0;
+    ticks_izq = 0;
     
     if(ticks_der < 30){
       analogWrite(VEL_DER,der);
@@ -387,7 +387,7 @@ class CortadoraClass{
     digitalWrite(RD_ADELANTE, HIGH);
 
     ticks_der = 0;
-    // ticks_izq = 0;
+    ticks_izq = 0;
     
     if(ticks_der < 30){
       analogWrite(VEL_DER,der);
@@ -407,7 +407,7 @@ class CortadoraClass{
     digitalWrite(RD_ADELANTE, LOW);
 
     ticks_der = 0;
-    // ticks_izq = 0;
+    ticks_izq = 0;
     
     if(ticks_der < 30){
       analogWrite(VEL_DER,der);
@@ -425,7 +425,7 @@ class CortadoraClass{
     digitalWrite(RD_ADELANTE, HIGH);
 
     ticks_der = 0;
-    // ticks_izq = 0;
+    ticks_izq = 0;
     
     if(ticks_der < 30){
       analogWrite(VEL_DER,der);
@@ -444,7 +444,7 @@ class CortadoraClass{
     digitalWrite(RD_ADELANTE, LOW);
     
     ticks_der = 0;
-    // ticks_izq = 0;
+    ticks_izq = 0;
     
     if(ticks_der < 30){
       analogWrite(VEL_DER,der);
