@@ -63,11 +63,10 @@ class CortadoraClass{
     bool busca_contorno;
     bool encontro_pared;
     bool pared_adelante;
-    int bandera;
     int ENCODER_DER;
     int ENCODER_IZQ;
-    int ticks_der;
-    int ticks_izq;
+    volatile int ticks_der;
+    volatile int ticks_izq;
     Fuzzy* fuzzy;
     
 
@@ -92,7 +91,6 @@ class CortadoraClass{
     busca_contorno = false;
     encontro_pared = false;
     pared_adelante = false;
-    bandera = 0;
 
     // Iniciacion variables globales privadas
     medida_adelante = 0;
@@ -285,18 +283,18 @@ class CortadoraClass{
 
   }
 
-  void controlar_vuelta_de_rueda(int izq, int der, int vueltas_izq, int vueltas_der){
-    ticks_der = 0;
-    ticks_izq = 0;
-    Serial.print("Entra al while\n");
-    while(ticks_der <= vueltas_der){
-      analogWrite(VEL_DER,der);
-      analogWrite(VEL_IZQ,izq);
-    }
-    analogWrite(VEL_IZQ,0);
-    analogWrite(VEL_DER,0);
-    Serial.print("Salio del while");
-  }
+  // void controlar_vuelta_de_rueda(int izq, int der, int vueltas_izq, int vueltas_der){
+  //   ticks_der = 0;
+  //   ticks_izq = 0;
+  //   Serial.print("Entra al while\n");
+  //   while(ticks_der <= vueltas_der){
+  //     analogWrite(VEL_DER,der);
+  //     analogWrite(VEL_IZQ,izq);
+  //   }
+  //   analogWrite(VEL_IZQ,0);
+  //   analogWrite(VEL_DER,0);
+  //   Serial.print("Salio del while");
+  // }
 
   void girar_izq(int izq, int der){
     Serial.print("Girar izquierda\n");    
@@ -308,12 +306,12 @@ class CortadoraClass{
     digitalWrite(RD_ADELANTE, HIGH);
     ticks_der = 0;
     ticks_izq = 0;
-    Serial.print("Entra al while\n");
-    while(bandera == 0){
+    // Serial.print("Entra al while\n");
+    while(ticks_der <= 50){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }
-    Serial.print("Salio del while");
+    // Serial.print("Salio del while");
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
 
@@ -331,12 +329,12 @@ class CortadoraClass{
     
     ticks_der = 0;
     ticks_izq = 0;
-    Serial.print("Entra al while\n");
-    while(ticks_der <= 1000){
+    // Serial.print("Entra al while\n");
+    while(ticks_der <= 50){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }
-    Serial.print("Salio del while");
+    // Serial.print("Salio del while");
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
 
@@ -344,7 +342,7 @@ class CortadoraClass{
   }
 
   void mover_adelante(int izq, int der){
-    // Serial.print("Adelante\n");
+    Serial.print("Adelante\n");
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
     digitalWrite(RI_ADELANTE, HIGH);
@@ -354,14 +352,14 @@ class CortadoraClass{
 
     ticks_der = 0;
     ticks_izq = 0;
-    Serial.print("Entra al while\n");
-    while(bandera == false){
+    // Serial.print("Entra al while\n");
+    while(ticks_der <= 50){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
-    Serial.print("Salio del while");
+    // Serial.print("Salio del while");
     // Serial.print("Ticks der: ");
     // Serial.print(ticks_der); Serial.print("\n");
 
@@ -382,21 +380,17 @@ class CortadoraClass{
 
     ticks_der = 0;
     ticks_izq = 0;
-    Serial.print("Entra al while\n");
-    while(ticks_der <= 1000){
+    // Serial.print("Entra al while\n");
+    while(ticks_der <= 50){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }
     analogWrite(VEL_IZQ,0);
     analogWrite(VEL_DER,0);
-    Serial.print("Salio del while");
-    Serial.print("Ticks der: ");
-    Serial.print(ticks_der); Serial.print("\n");
+    // Serial.print("Salio del while");
+    // Serial.print("Ticks der: ");
+    // Serial.print(ticks_der); Serial.print("\n");
 
-    // delay(3000);
-
-
-    // controlar_vuelta_de_rueda(izq, der, 1000, 1000);
   }
 
   void corregir_izq(int izq, int der){
@@ -470,33 +464,41 @@ class CortadoraClass{
     float rueda_izq = float(fuzzy->defuzzify(1)); //salida rueda izquierda
     float rueda_der = float(fuzzy->defuzzify(2)); //salida rueda derecha
 
-    // Serial.print("Adelante Distancia: ");
-    // Serial.println(adelante);
-    // Serial.print(", ");
-    // Serial.print(adelante_cerca->getPertinence());
-    // Serial.print(", ");
-    // Serial.print(adelante_bien->getPertinence());
-    // Serial.print(", ");
-    // Serial.println(adelante_lejos->getPertinence());
+    Serial.print("Distancia adelante: ");
+    Serial.println(adelante);
+    Serial.print(", ");
+    Serial.print("Grado Pertenencia a Cerca: ");
+    Serial.println(adelante_cerca->getPertinence());
+    Serial.print(", ");
+    Serial.print("Grado Pertenencia a Bien: ");
+    Serial.println(adelante_bien->getPertinence());
+    Serial.print(", ");
+    Serial.print("Grado Pertenencia a Lejos: ");
+    Serial.println(adelante_lejos->getPertinence());
     
-    // Serial.print("Izquierda Distancia: ");
-    // Serial.println(izq);
-    // Serial.print(", ");
-    // Serial.print(izq_muy_cerca->getPertinence());
-    // Serial.print(", ");
-    // Serial.print(izq_cerca->getPertinence());
-    // Serial.print(", ");
-    // Serial.print(izq_perfecto->getPertinence());
-    // Serial.print(", ");
-    // Serial.println(izq_lejos->getPertinence());
-    // Serial.print(", ");
-    // Serial.println(izq_muy_lejos->getPertinence());
+    Serial.print("Distancia izquierda: ");
+    Serial.println(izq);
+    Serial.print(", ");
+    Serial.print("Grado Pertenencia a Muy Cerca: ");
+    Serial.println(izq_muy_cerca->getPertinence());
+    Serial.print(", ");
+    Serial.print("Grado Pertenencia a Cerca: ");
+    Serial.println(izq_cerca->getPertinence());
+    Serial.print(", ");
+    Serial.print("Grado Pertenencia a Perfecto: ");
+    Serial.println(izq_perfecto->getPertinence());
+    Serial.print(", ");
+    Serial.print("Grado Pertenencia a Lejos: ");
+    Serial.println(izq_lejos->getPertinence());
+    Serial.print(", ");
+    Serial.print("Grado Pertenencia a Muy Lejos: ");
+    Serial.println(izq_muy_lejos->getPertinence());
 
-    // Serial.print("Velocidad izquierda: ");
-    // Serial.print(rueda_izq);
-    // Serial.print(", derecha: ");
-    // Serial.println(rueda_der);
-    // Serial.println("\n");
+    Serial.print("Velocidad izquierda: ");
+    Serial.print(rueda_izq);
+    Serial.print(", derecha: ");
+    Serial.println(rueda_der);
+    Serial.println("\n");
 
     switch (accion) {
       case 3:
@@ -524,11 +526,6 @@ class CortadoraClass{
         mover_atras(rueda_izq, rueda_der);
         break;
     }
-  }
-
-  void imprimir(){
-    Serial.println("Ticks: "); Serial.print(ticks_der); Serial.print("\n");
-    delay(1000);
   }
 
   void buscar_pared(){
