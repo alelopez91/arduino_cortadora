@@ -2,9 +2,11 @@
 
 CortadoraClass cortadora;
 int ENCODER_DER = 2;
+int ENCODER_IZQ = 3;
 int contador = 0;
 int pos_x = 0;
 int pos_y = 10;
+
 void setup(){
   Serial.begin(9600);
   cortadora.init();
@@ -12,10 +14,9 @@ void setup(){
   cortadora.ticks_izq = -2;
 
   pinMode(ENCODER_DER, INPUT_PULLUP);
+  pinMode(ENCODER_IZQ, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(ENCODER_DER), cuenta_vueltas_der, CHANGE);
-  // attachInterrupt(0, cuenta_vueltas_izq, RISING);
-
-
+  attachInterrupt(digitalPinToInterrupt(ENCODER_IZQ), cuenta_vueltas_izq, CHANGE);
 
   Serial.println("1...");
   delay(1000);
@@ -25,10 +26,10 @@ void setup(){
 }
 
 void loop(){
-  
+
   // Serial.print(digitalRead(cortadora.ENCODER_IZQ));
   // Serial.println("    ");
-  cortadora.mover_adelante(50, 0);
+  // cortadora.mover_adelante(50, 0);
   // Serial.println("asdasdasdasdasdasdsasdasdasdlk");
   // delay(3000);
   // cortadora.mover_atras(120, 120);
@@ -49,9 +50,42 @@ void loop(){
   //      }
   //   }    
   // }
+  Serial.print("asdas");
+  while(contador<4){
 
-  delay(2000);
-
+    digitalWrite(9, HIGH);
+    digitalWrite(8, LOW);
+    analogWrite(10, 1);
+  
+    digitalWrite(13, HIGH);
+    digitalWrite(12, LOW);
+    analogWrite(11, 1);
+    
+    delay(500);
+    digitalWrite(9, LOW);
+    digitalWrite(8, LOW);
+    digitalWrite(13, LOW);
+    digitalWrite(12, LOW);
+    delay(500);
+  
+    digitalWrite(9, LOW);
+    digitalWrite(8, HIGH);
+    analogWrite(10, 1);
+  
+    digitalWrite(13, LOW);
+    digitalWrite(12, HIGH);
+    analogWrite(11, 1);
+  
+    delay(500);
+    digitalWrite(9, LOW);
+    digitalWrite(8, LOW);
+    digitalWrite(13, LOW);
+    digitalWrite(12, LOW);
+    delay(500);
+    
+    contador++;
+  }
+  
 };
 
 void cuenta_vueltas_der(){

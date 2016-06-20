@@ -87,16 +87,16 @@ class CortadoraClass{
   void init(){
 
     // Asignacion de pines
-    RD_ATRAS = 12;
     RD_ADELANTE = 13;
-    RI_ADELANTE = 8;
-    RI_ATRAS = 9;
+    RD_ATRAS = 12;
+    VEL_DER = 11;
+    RI_ADELANTE = 9;
+    RI_ATRAS = 8;
+    VEL_IZQ = 10;
     US_ADELANTE_ECHO = 6;
     US_ADELANTE_TRIG = 7;
-    US_IZQ_ECHO = 4;
-    US_IZQ_TRIG = 5;
-    VEL_IZQ = 10;
-    VEL_DER = 11;
+    US_IZQ_ECHO = 5;
+    US_IZQ_TRIG = 4;
     ENCODER_IZQ = 2;
     ENCODER_DER = 3;
 
@@ -326,18 +326,18 @@ class CortadoraClass{
     cuadrantes.push_back(nuevo_cuadrante);
   }
 
-  void controlar_vuelta_de_rueda(int izq, int der, int vueltas_izq, int vueltas_der){
-    ticks_der = 0;
-    ticks_izq = 0;
-    Serial.print("Entra al while\n");
-    while(ticks_der <= vueltas_der){
-      analogWrite(VEL_DER,der);
-      analogWrite(VEL_IZQ,izq);
-    }
-    analogWrite(VEL_IZQ,0);
-    analogWrite(VEL_DER,0);
-    Serial.print("Salio del while");
-  }
+  // void controlar_vuelta_de_rueda(int izq, int der, int vueltas_izq, int vueltas_der){
+  //   ticks_der = 0;
+  //   ticks_izq = 0;
+  //   Serial.print("Entra al while\n");
+  //   while(ticks_der <= vueltas_der){
+  //     analogWrite(VEL_DER,der);
+  //     analogWrite(VEL_IZQ,izq);
+  //   }
+  //   analogWrite(VEL_IZQ,0);
+  //   analogWrite(VEL_DER,0);
+  //   Serial.print("Salio del while");
+  // }
 
   void girar_izq(int izq, int der){
     digitalWrite(RI_ADELANTE, LOW);
