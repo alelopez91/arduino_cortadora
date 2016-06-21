@@ -28,13 +28,11 @@ class CortadoraClass{
     int VEL_IZQ;
     int VEL_DER;
     
-    // Ultrasonido izquierdo - derecho
+    // Ultrasonido izquierdo - adelante
     int US_ADELANTE_TRIG;
     int US_ADELANTE_ECHO;
     int US_IZQ_TRIG;
     int US_IZQ_ECHO;
-
-    // Encoders opticos
 
     // Variables globales
     int medida_adelante;
@@ -50,27 +48,27 @@ class CortadoraClass{
     //Conjuntos difusos de entrada para los ultrasonidos
 
     //Ultrasonido delantero:
-    FuzzySet* adelante_cerca = new FuzzySet(0, 0, 10, 17);        //Conjunto difuso Distancia cerca
-    FuzzySet* adelante_bien  = new FuzzySet(13, 20, 20, 27);       //Conjunto difuso Distancia deseada
-    FuzzySet* adelante_lejos = new FuzzySet(24, 30, 250, 250);    //Conjunto difuso Distancia lejos
+    FuzzySet* adelante_cerca = new FuzzySet(0, 0, 23, 32);       //Conjunto difuso Distancia cerca
+    FuzzySet* adelante_bien  = new FuzzySet(26, 35, 35, 44);     //Conjunto difuso Distancia deseada
+    FuzzySet* adelante_lejos = new FuzzySet(38, 47, 300, 300);   //Conjunto difuso Distancia lejos
     //Ultrasonido izquierdo:
-    FuzzySet* izq_muy_cerca  = new FuzzySet(0, 0, 2, 5);         //Conjunto difuso Distancia demasiado cerca
-    FuzzySet* izq_cerca      = new FuzzySet(3, 6, 6, 8);         //Conjunto difuso Distancia cerca
-    FuzzySet* izq_perfecto   = new FuzzySet(7, 9, 9, 11);        //Conjunto difuso Distancia deseada
-    FuzzySet* izq_lejos      = new FuzzySet(10, 12, 12, 15);     //Conjunto difuso Distancia lejos
-    FuzzySet* izq_muy_lejos  = new FuzzySet(13, 15, 250, 250);     //Conjunto difuso Distancia demasiado lejos
+    FuzzySet* izq_muy_cerca  = new FuzzySet(0, 0, 6, 12);        //Conjunto difuso Distancia demasiado cerca
+    FuzzySet* izq_cerca      = new FuzzySet(8, 14, 14, 18);      //Conjunto difuso Distancia cerca
+    FuzzySet* izq_perfecto   = new FuzzySet(16, 20, 20, 24);     //Conjunto difuso Distancia deseada
+    FuzzySet* izq_lejos      = new FuzzySet(22, 26, 26, 32);     //Conjunto difuso Distancia lejos
+    FuzzySet* izq_muy_lejos  = new FuzzySet(28, 32, 300, 300);   //Conjunto difuso Distancia demasiado lejos
 
     //Conjuntos difusos de salida para la velocidad de los motores
 
     //Velocidad de motor izquierdo:
-    FuzzySet* izq_detener    = new FuzzySet(0, 0, 0, 60);             // Velocidad para detener     
-    FuzzySet* izq_vel_suave  = new FuzzySet(60, 120, 120, 180);           // Velocidad hacia adelante
-    FuzzySet* izq_vel_rapida = new FuzzySet(160, 200, 240, 240);     // Velocidad hacia adelante rapida
+    FuzzySet* izq_detener    = new FuzzySet(0, 0, 0, 0);         // Velocidad para detener     
+    FuzzySet* izq_vel_suave  = new FuzzySet(60, 90, 90, 120);    // Velocidad hacia adelante
+    FuzzySet* izq_vel_rapida = new FuzzySet(110, 140, 180, 180); // Velocidad hacia adelante rapida
 
     //Velocidad de motor derecho:
-    FuzzySet* der_detener    = new FuzzySet(0, 0, 0, 60);             // Velocidad para detener     
-    FuzzySet* der_vel_suave  = new FuzzySet(60, 120, 120, 180);           // Velocidad hacia adelante
-    FuzzySet* der_vel_rapida = new FuzzySet(160, 200, 240, 240);     // Velocidad hacia adelante rapida
+    FuzzySet* der_detener    = new FuzzySet(0, 0, 0, 0);         // Velocidad para detener     
+    FuzzySet* der_vel_suave  = new FuzzySet(60, 90, 90, 120);    // Velocidad hacia adelante
+    FuzzySet* der_vel_rapida = new FuzzySet(110, 140, 180, 180); // Velocidad hacia adelante rapida
 
     
   public:
@@ -78,8 +76,6 @@ class CortadoraClass{
     bool busca_contorno ;
     bool encontro_pared;
     bool pared_adelante;
-    int ENCODER_DER;
-    int ENCODER_IZQ;
     volatile int ticks_der;
     volatile int ticks_izq;
     Fuzzy* fuzzy;
@@ -89,18 +85,16 @@ class CortadoraClass{
   void init(){
 
     // Asignacion de pines
-    RD_ADELANTE = 13;
-    RD_ATRAS = 12;
+    RD_ADELANTE = 12;
+    RD_ATRAS = 13;
     VEL_DER = 11;
-    RI_ADELANTE = 9;
-    RI_ATRAS = 8;
+    RI_ADELANTE = 8;
+    RI_ATRAS = 9;
     VEL_IZQ = 10;
     US_ADELANTE_ECHO = 6;
     US_ADELANTE_TRIG = 7;
     US_IZQ_ECHO = 5;
     US_IZQ_TRIG = 4;
-    ENCODER_IZQ = 2;
-    ENCODER_DER = 3;
 
     // Iniciacion variables globales publicas
     tiene_posicion_inicial = false;
@@ -115,9 +109,9 @@ class CortadoraClass{
     ticks_der = 0;
     angulo = 0;
     pos_x = 0; //posicion actual de la cortadora
-    dx = 30; //incrementos en eje x
+    dx = 35; //incrementos en eje x
     pos_y = 0; //posicion actual de la cortadora
-    dy = 30; //incrementos en eje y
+    dy = 35; //incrementos en eje y
     fuzzy = new Fuzzy();
 
     // Comportamiento de pines dentro de arduino
@@ -131,8 +125,6 @@ class CortadoraClass{
     pinMode(US_IZQ_ECHO, INPUT);
     pinMode(VEL_IZQ,OUTPUT);
     pinMode(VEL_DER,OUTPUT);
-    pinMode(ENCODER_DER, INPUT);
-    pinMode(ENCODER_IZQ, INPUT);
 
     //Estados iniciales de pines
     digitalWrite(RI_ATRAS, LOW);
@@ -347,13 +339,13 @@ class CortadoraClass{
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, HIGH);
 
-    ticks_der = 0;
-    ticks_izq = 0;
     
     if(ticks_der < 30){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }else{
+      ticks_der = 0;
+      ticks_izq = 0;
       analogWrite(VEL_IZQ,0);
       analogWrite(VEL_DER,0);
       angulo += 90;
@@ -368,13 +360,13 @@ class CortadoraClass{
     digitalWrite(RD_ATRAS, HIGH);
     digitalWrite(RD_ADELANTE, LOW);
     
-    ticks_der = 0;
-    ticks_izq = 0;
     
     if(ticks_der < 30){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }else{
+      ticks_der = 0;
+      ticks_izq = 0;
       analogWrite(VEL_IZQ,0);
       analogWrite(VEL_DER,0);
       angulo -= 90;
@@ -388,7 +380,7 @@ class CortadoraClass{
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, HIGH);
     
-    if(ticks_der < 30){
+    if(ticks_der < 32){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }else{
@@ -407,13 +399,13 @@ class CortadoraClass{
     digitalWrite(RD_ATRAS, HIGH);
     digitalWrite(RD_ADELANTE, LOW);
 
-    ticks_der = 0;
-    ticks_izq = 0;
     
     if(ticks_der < 30){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }else{
+      ticks_der = 0;
+      ticks_izq = 0;
       analogWrite(VEL_IZQ,0);
       analogWrite(VEL_DER,0);
     }
@@ -425,13 +417,13 @@ class CortadoraClass{
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, HIGH);
 
-    ticks_der = 0;
-    ticks_izq = 0;
     
     if(ticks_der < 30){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }else{
+      ticks_der = 0;
+      ticks_izq = 0;
       analogWrite(VEL_IZQ,0);
       analogWrite(VEL_DER,0);
     }
@@ -444,13 +436,13 @@ class CortadoraClass{
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, LOW);
     
-    ticks_der = 0;
-    ticks_izq = 0;
     
     if(ticks_der < 30){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }else{
+      ticks_der = 0;
+      ticks_izq = 0;
       analogWrite(VEL_IZQ,0);
       analogWrite(VEL_DER,0);
     }
@@ -472,11 +464,11 @@ class CortadoraClass{
     distancia = int((tiempo/2)/29);
 
     return distancia;
-    Serial.print("Distancia ");
-    Serial.print(distancia);
-    Serial.print(" cm - Pin echo: ");
-    Serial.println(echo);
-    Serial.println("\n");
+    // Serial.print("Distancia ");
+    // Serial.print(distancia);
+    // Serial.print(" cm - Pin echo: ");
+    // Serial.println(echo);
+    // Serial.println("\n");
 
     delay(50);
   }
@@ -559,7 +551,7 @@ class CortadoraClass{
     // Serial.println("Buscar Pared");
     medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
     if(medida_adelante > DISTANCIA_MIN_OBS_ADELANTE){
-      fusificar(medida_adelante, 15, 3);//'mover_adelante'
+      fusificar(medida_adelante, 32, 3);//'mover_adelante'
       delay(500);
     }
     else{
@@ -574,7 +566,7 @@ class CortadoraClass{
     medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
     medida_izq = medir(US_IZQ_TRIG, US_IZQ_ECHO);
 
-    if(medida_adelante <= DISTANCIA_MIN_OBS_ADELANTE and  medida_izq <= 14){
+    if(medida_adelante <= DISTANCIA_MIN_OBS_ADELANTE and  medida_izq <= 22){
       // Serial.println("Guarda pos inicial");
       tiene_posicion_inicial = true;
       busca_contorno = true;
@@ -582,7 +574,7 @@ class CortadoraClass{
       delay(500);
     }
     else{
-      if(medida_izq <= 14){
+      if(medida_izq <= 22){
         fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'
         delay(500);
       }
@@ -592,7 +584,7 @@ class CortadoraClass{
         delay(500);
       }
 
-      if(medida_adelante > DISTANCIA_MIN_OBS_ADELANTE and  medida_izq > 14){
+      if(medida_adelante > DISTANCIA_MIN_OBS_ADELANTE and  medida_izq > 22){
         fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'
         delay(500);
       }
@@ -608,17 +600,17 @@ class CortadoraClass{
       fusificar(medida_adelante, medida_izq, 1); //'girar_der'
     }
     else{
-      if(medida_izq <= 8){
+      if(medida_izq <= 17){
         encontro_pared = true;
         fusificar(medida_adelante, medida_izq, 4);//'corregir_der'
       }
       else{
-        if(medida_izq <= 10){
+        if(medida_izq <= 23){
           encontro_pared = true;
           fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'          
         }
         else{
-          if(medida_izq <= 14){
+          if(medida_izq <= 27){
             encontro_pared = true;
             fusificar(medida_adelante, medida_izq, 5);//'corregir_izq'
           }

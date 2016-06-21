@@ -4,6 +4,7 @@ CortadoraClass cortadora;
 int ENCODER_DER = 3;
 int ENCODER_IZQ = 2;
 int contador = 0;
+int velocidad =180;
 int pos_x = 0;
 int pos_y = 10;
 
@@ -26,6 +27,7 @@ void setup(){
 }
 
 void loop(){
+  
 
   if(cortadora.pared_adelante == false){
     cortadora.buscar_pared();
@@ -40,7 +42,6 @@ void loop(){
       }
     }    
   }
-
   
 };
 
@@ -55,3 +56,28 @@ void cuenta_vueltas_izq(){
   // Serial.print(cortadora.ticks_izq); Serial.print("\n");
   cortadora.ticks_izq += 1;
 }
+
+  // while(contador<3){
+    // digitalWrite(12, HIGH);
+    // digitalWrite(13, LOW);
+    // analogWrite(11, velocidad);
+  // 
+    // digitalWrite(8, HIGH);
+    // digitalWrite(9, LOW);
+    // analogWrite(10, velocidad);
+    // 
+    // delay(1000);
+  // 
+    // digitalWrite(12, LOW);
+    // digitalWrite(13, HIGH);
+    // analogWrite(11, velocidad);
+  // 
+    // digitalWrite(8, LOW);
+    // digitalWrite(9, HIGH);
+    // analogWrite(10, velocidad);
+  // 
+    // delay(1000);
+    // contador++;
+  // }
+    // analogWrite(10, 0);
+    // analogWrite(11, 0);
