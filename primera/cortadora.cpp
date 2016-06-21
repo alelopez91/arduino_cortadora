@@ -41,9 +41,11 @@ class CortadoraClass{
     int medida_izq;
     int angulo;
     int pos_x;
-    int dx ;
+    int dx;
     int pos_y;
-    int dy ;
+    int dy;
+
+    const int DISTANCIA_MIN_OBS_ADELANTE = 35;
 
     //Conjuntos difusos de entrada para los ultrasonidos
 
@@ -385,14 +387,13 @@ class CortadoraClass{
     digitalWrite(RI_ATRAS, LOW);
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, HIGH);
-
-    ticks_der = 0;
-    ticks_izq = 0;
     
     if(ticks_der < 30){
       analogWrite(VEL_DER,der);
       analogWrite(VEL_IZQ,izq);
     }else{
+      ticks_der = 0;
+      ticks_izq = 0;
       analogWrite(VEL_IZQ,0);
       analogWrite(VEL_DER,0);
       calcular_orientacion();
@@ -557,7 +558,7 @@ class CortadoraClass{
   void buscar_pared(){
     // Serial.println("Buscar Pared");
     medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
-    if(medida_adelante > 30){
+    if(medida_adelante > DISTANCIA_MIN_OBS_ADELANTE){
       fusificar(medida_adelante, 15, 3);//'mover_adelante'
       delay(500);
     }
@@ -573,7 +574,7 @@ class CortadoraClass{
     medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
     medida_izq = medir(US_IZQ_TRIG, US_IZQ_ECHO);
 
-    if(medida_adelante <= 30 and  medida_izq <= 14){
+    if(medida_adelante <= DISTANCIA_MIN_OBS_ADELANTE and  medida_izq <= 14){
       // Serial.println("Guarda pos inicial");
       tiene_posicion_inicial = true;
       busca_contorno = true;
@@ -586,12 +587,12 @@ class CortadoraClass{
         delay(500);
       }
 
-      if(medida_adelante <= 30){
+      if(medida_adelante <= DISTANCIA_MIN_OBS_ADELANTE){
         fusificar(medida_adelante, medida_izq, 1); //girar_der()
         delay(500);
       }
 
-      if(medida_adelante > 30 and  medida_izq > 14){
+      if(medida_adelante > DISTANCIA_MIN_OBS_ADELANTE and  medida_izq > 14){
         fusificar(medida_adelante, medida_izq, 3);//'mover_adelante'
         delay(500);
       }
@@ -603,7 +604,7 @@ class CortadoraClass{
     medida_adelante = medir(US_ADELANTE_TRIG, US_ADELANTE_ECHO);
     medida_izq = medir(US_IZQ_TRIG, US_IZQ_ECHO);
 
-    if(medida_adelante <= 30){
+    if(medida_adelante <= DISTANCIA_MIN_OBS_ADELANTE){
       fusificar(medida_adelante, medida_izq, 1); //'girar_der'
     }
     else{
