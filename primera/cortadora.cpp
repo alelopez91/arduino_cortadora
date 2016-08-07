@@ -39,11 +39,13 @@ class CortadoraClass{
     int medida_izq;
     int angulo;
     int pos_x;
-    int dx;
+    const int dx = 25;
     int pos_y;
-    int dy;
+    const int dy = 25;
 
-    const int DISTANCIA_MIN_OBS_ADELANTE = 35;
+    const int DISTANCIA_MIN_OBS_ADELANTE = 25;
+    static const int filas_mapa = 5;
+    const static int col_mapa = 6;
 
     //Conjuntos difusos de entrada para los ultrasonidos
 
@@ -80,6 +82,7 @@ class CortadoraClass{
     volatile int ticks_izq;
     Fuzzy* fuzzy;
     std::vector<CuadranteClass> cuadrantes;
+    std::vector<CuadranteClass> mapa[filas_mapa][col_mapa];
     
 
   void init(){
@@ -87,10 +90,10 @@ class CortadoraClass{
     // Asignacion de pines
     RD_ADELANTE = 12;
     RD_ATRAS = 13;
-    VEL_DER = 11;
+    VEL_DER = 10;
     RI_ADELANTE = 8;
     RI_ATRAS = 9;
-    VEL_IZQ = 10;
+    VEL_IZQ = 11;
     US_ADELANTE_ECHO = 6;
     US_ADELANTE_TRIG = 7;
     US_IZQ_ECHO = 5;
@@ -109,9 +112,9 @@ class CortadoraClass{
     ticks_der = 0;
     angulo = 0;
     pos_x = 0; //posicion actual de la cortadora
-    dx = 35; //incrementos en eje x
     pos_y = 0; //posicion actual de la cortadora
-    dy = 35; //incrementos en eje y
+    // filas_mapa = 5;
+    // col_mapa = 6;
     fuzzy = new Fuzzy();
 
     // Comportamiento de pines dentro de arduino
@@ -316,7 +319,7 @@ class CortadoraClass{
 
   void crear_cuadrante(int pos_x, int pos_y){
     CuadranteClass nuevo_cuadrante;
-    nuevo_cuadrante.init(pos_x,pos_y);
+    nuevo_cuadrante.init(pos_x,pos_y, dx, dy);
     cuadrantes.push_back(nuevo_cuadrante);
   }
 
@@ -338,19 +341,15 @@ class CortadoraClass{
     digitalWrite(RI_ATRAS, HIGH);
     digitalWrite(RD_ATRAS, LOW);
     digitalWrite(RD_ADELANTE, HIGH);
-
-    
-    if(ticks_der < 30){
-      analogWrite(VEL_DER,der);
-      analogWrite(VEL_IZQ,izq);
-    }else{
-      ticks_der = 0;
-      ticks_izq = 0;
+    ticks_der = 0;
+    ticks_izq = 0;  
+    while(ticks_der < 300){
+      analogWrite(VEL_IZQ, 150);
+      analogWrite(VEL_DER, 150);
+    }
       analogWrite(VEL_IZQ,0);
       analogWrite(VEL_DER,0);
       angulo += 90;
-    }
-
     // controlar_vuelta_de_rueda(izq, der, 10, 10);
   }
 
@@ -359,19 +358,15 @@ class CortadoraClass{
     digitalWrite(RI_ATRAS, LOW);
     digitalWrite(RD_ATRAS, HIGH);
     digitalWrite(RD_ADELANTE, LOW);
-    
-    
-    if(ticks_der < 30){
-      analogWrite(VEL_DER,der);
-      analogWrite(VEL_IZQ,izq);
-    }else{
-      ticks_der = 0;
-      ticks_izq = 0;
+    ticks_der = 0;
+    ticks_izq = 0;  
+    while(ticks_der < 300){
+      analogWrite(VEL_IZQ, 150);
+      analogWrite(VEL_DER, 150);
+    }
       analogWrite(VEL_IZQ,0);
       analogWrite(VEL_DER,0);
       angulo -= 90;
-    }
-
   }
 
   void mover_adelante(int izq, int der){
@@ -627,4 +622,41 @@ class CortadoraClass{
       }
     }    
   }
+
+  void cargar_mapa(){
+    CuadranteClass c1 = crear_cuadrante(0,0);
+    mapa[0][0] = c1;
+    // mapa[0][1] = crear_cuadrante(0,0);
+    // mapa[0][2] = crear_cuadrante(0,0);
+    // mapa[0][3] = crear_cuadrante(0,0);
+    // mapa[0][4] = crear_cuadrante(0,0);
+    // mapa[0][5] = crear_cuadrante(0,0);
+    // mapa[1][0] = crear_cuadrante(0,0);
+    // mapa[1][1] = crear_cuadrante(0,0);
+    // mapa[1][2] = crear_cuadrante(0,0);
+    // mapa[1][3] = crear_cuadrante(0,0);
+    // mapa[1][4] = crear_cuadrante(0,0);
+    // mapa[1][5] = crear_cuadrante(0,0);
+    // mapa[2][0] = crear_cuadrante(0,0);
+    // mapa[2][1] = crear_cuadrante(0,0);
+    // mapa[2][2] = crear_cuadrante(0,0);
+    // mapa[2][3] = crear_cuadrante(0,0);
+    // mapa[2][4] = crear_cuadrante(0,0);
+    // mapa[2][5] = crear_cuadrante(0,0);
+    // mapa[3][0] = crear_cuadrante(0,0);
+    // mapa[3][1] = crear_cuadrante(0,0);
+    // mapa[3][2] = crear_cuadrante(0,0);
+    // mapa[3][3] = crear_cuadrante(0,0);
+    // mapa[3][4] = crear_cuadrante(0,0);
+    // mapa[3][5] = crear_cuadrante(0,0);
+    // mapa[4][0] = crear_cuadrante(0,0);
+    // mapa[4][1] = crear_cuadrante(0,0);
+    // mapa[4][2] = crear_cuadrante(0,0);
+    // mapa[4][3] = crear_cuadrante(0,0);
+    // mapa[4][4] = crear_cuadrante(0,0);
+    // mapa[4][5] = crear_cuadrante(0,0);
+  }
+  // void iniciar_poblacion(){
+    
+  // }
 };
